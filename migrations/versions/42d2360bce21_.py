@@ -70,8 +70,11 @@ def upgrade():
 
 
 def downgrade():
+    op.drop_constraint('fk_documents_goods_incoming', 'goods_incoming', type='foreignkey')
+    op.drop_constraint('fk_attributes_goods_incoming', 'goods_incoming', type='foreignkey')
+    op.drop_constraint('fk_nomenclatures_goods_incoming', 'goods_incoming', type='foreignkey')
+
     op.drop_table('goods_incoming')
     op.drop_table('nomenclatures')
     op.drop_table('documents')
     op.drop_table('attributes')
-
