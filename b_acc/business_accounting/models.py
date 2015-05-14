@@ -11,7 +11,7 @@ class Nomenclatures(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     internal_code = connection.Column(connection.Integer)
     name = connection.Column(connection.String(255))
-    ext_name = connection.Column(connection.String(255))
+    ext_name = connection.Column(connection.String(255), nullable=True)
 
 
 class Documents(connection.Model):

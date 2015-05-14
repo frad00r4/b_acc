@@ -5,6 +5,8 @@ __email__ = 'frad00r4@gmail.com'
 
 DEBUG = True
 SECRET_KEY = 'dsddfgdsdfghgfdsffgjhdghgh'
+WTF_CSRF_ENABLED = True
+WTF_CSRF_SECRET_KEY = 'dfghjasrctvw5ygrtvbjrtyycvtybjcrevhvrtyujh'
 LISTEN = '0.0.0.0'
 PORT = 5000
 SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost:3306/b_acc'

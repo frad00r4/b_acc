@@ -6,7 +6,7 @@ __email__ = 'frad00r4@gmail.com'
 from flask import Flask
 from exts import connection, migrate, login_manager
 from business_accounting import business_accounting
-
+import os
 
 BLUEPRINTS = (
     business_accounting,
@@ -19,7 +19,9 @@ app = None
 
 def create_app(config=None):
     global app
-    app = Flask('b_acc')
+    app = Flask('b_acc', static_url_path='/static',
+                static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'))
+    print app._static_folder
 
     app.config.from_pyfile('config.py')
     if config:

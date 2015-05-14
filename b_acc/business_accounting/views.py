@@ -4,15 +4,17 @@ __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
 
 from flask import Blueprint, request, render_template
-from flask_login import login_required
+from .forms import AddNomenclatures
 
-business_accounting = Blueprint('b_acc', __name__, url_prefix='/b_acc/', template_folder='templates')
+business_accounting = Blueprint('b_acc', __name__, url_prefix='/b_acc/')
 
 
-@business_accounting.route('add_nomenclature')
-#@login_required
+@business_accounting.route('add_nomenclature', methods=('POST', 'GET'))
 def add_nomenclature():
-    if request.method == 'POST':
-        pass
+    form = AddNomenclatures()
 
-    return render_template('b_acc/add_nomenclature.html')
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            return 'GOOD'
+
+    return render_template('b_acc/add_nomenclature.html', form=form)

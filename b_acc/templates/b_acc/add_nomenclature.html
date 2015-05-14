@@ -1,0 +1,12 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Add nomenclatures" %}
+{% block body %}
+<form method="POST">
+    {{ form.csrf_token }}
+        {{ form.internal_code.label }} {{ form.internal_code(size=10) }}</br>
+    {{ form.name.label }} {{ form.name(size=20) }}</br>
+    {{ form.ext_name.label }} {{ form.ext_name(size=20) }}</br>
+    {{ form.submit() }}
+</form>
+{% endblock %}
