@@ -18,7 +18,7 @@ def upgrade():
     op.create_table(
         'nomenclatures',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('internal_code', sa.Integer),
+        sa.Column('internal_code', sa.Integer, unique=True),
         sa.Column('name', sa.Unicode(255), nullable=False),
         sa.Column('ext_name', sa.Unicode(255), nullable=True)
     )

@@ -1,0 +1,32 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Номенклатуры" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-2">
+            <a href="/b_acc/nomenclatures/add">
+                <button type="button" class="btn btn-info">Добавить</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>НомерВнутренний код</th>
+                <th>Название</th>
+                <th>Дополнительная информация</th>
+            </thead>
+            <tbody>
+            {% for nomenclature in nomenclatures %}
+                <tr>
+                    <td>{{ nomenclature.internal_code }}</td>
+                    <td>{{ nomenclature.name }}</td>
+                    <td>{{ nomenclature.ext_name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

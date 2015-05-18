@@ -9,7 +9,7 @@ from ..exts import connection
 
 class Nomenclatures(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
-    internal_code = connection.Column(connection.Integer)
+    internal_code = connection.Column(connection.Integer, unique=True)
     name = connection.Column(connection.String(255))
     ext_name = connection.Column(connection.String(255), nullable=True)
 

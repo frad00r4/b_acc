@@ -21,7 +21,6 @@ def create_app(config=None):
     global app
     app = Flask('b_acc', static_url_path='/static',
                 static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'))
-    print app._static_folder
 
     app.config.from_pyfile('config.py')
     if config:

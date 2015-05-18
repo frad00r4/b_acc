@@ -2,11 +2,21 @@
 <html>
 <head lang="ru">
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
     <title>{{ title }}</title>
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <div class="container">
+        {% set messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block body %}{% endblock %}
+    </div>
 </body>
 </html>
