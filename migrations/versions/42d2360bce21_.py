@@ -26,13 +26,14 @@ def upgrade():
     op.create_table(
         'documents',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('description', sa.Unicode(255), nullable=False),
+        sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
+        sa.Column('description', sa.Unicode(255), nullable=True),
     )
 
     op.create_table(
         'attributes',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('name', sa.Unicode(255), nullable=False),
+        sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
     )
 
     op.create_table(

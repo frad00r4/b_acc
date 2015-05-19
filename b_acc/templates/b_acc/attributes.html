@@ -1,0 +1,28 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Аттрибуты" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-2">
+            <a href="/b_acc/attributes/add">
+                <button type="button" class="btn btn-info">Добавить</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Название</th>
+            </thead>
+            <tbody>
+            {% for attribute in attributes %}
+                <tr>
+                    <td>{{ attribute.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

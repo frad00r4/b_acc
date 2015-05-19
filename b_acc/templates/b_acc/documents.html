@@ -1,0 +1,30 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Документы" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-2">
+            <a href="/b_acc/documents/add">
+                <button type="button" class="btn btn-info">Добавить</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Название</th>
+                <th>Дополнительная информация</th>
+            </thead>
+            <tbody>
+            {% for nomenclature in nomenclatures %}
+                <tr>
+                    <td>{{ nomenclature.name }}</td>
+                    <td>{{ nomenclature.description }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

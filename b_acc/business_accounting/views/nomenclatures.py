@@ -3,13 +3,20 @@
 __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
 
-from flask import Blueprint, request, render_template, flash, redirect, url_for
-from .forms import AddNomenclatures
-from .models import Nomenclatures
-from ..exts import connection
+from flask import request, render_template, flash, redirect, url_for
+from flask_wtf import Form
+from wtforms import StringField, IntegerField, SubmitField
+from wtforms.validators import DataRequired
+from ..models import Nomenclatures
+from ...exts import connection
+from . import business_accounting
 
 
-business_accounting = Blueprint('b_acc', __name__, url_prefix='/b_acc/')
+class AddNomenclatures(Form):
+    internal_code = IntegerField(u'Внутренний код', validators=[DataRequired()])
+    name = StringField(u'Название', validators=[DataRequired()])
+    ext_name = StringField(u'Дополнительная информация')
+    submit = SubmitField(u'Отправить')
 
 
 @business_accounting.route('nomenclatures')

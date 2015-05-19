@@ -1,0 +1,7 @@
+from flask import Blueprint
+
+business_accounting = Blueprint('b_acc', __name__, url_prefix='/b_acc/')
+
+import nomenclatures
+import documents
+import attributes

@@ -16,6 +16,7 @@ class Nomenclatures(connection.Model):
 
 class Documents(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
+    name = connection.Column(connection.String(255), unique=True)
     description = connection.Column(connection.String(255))
 
 
@@ -29,4 +30,4 @@ class GoodsIncoming(connection.Model):
 
 class Attributes(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
-    name = connection.Column(connection.String(255))
+    name = connection.Column(connection.String(255), unique=True)
