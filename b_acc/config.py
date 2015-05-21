@@ -9,4 +9,4 @@ WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'dfghjasrctvw5ygrtvbjrtyycvtybjcrevhvrtyujh'
 LISTEN = '0.0.0.0'
 PORT = 5000
-SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost:3306/b_acc'
+SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost:3306/b_acc'

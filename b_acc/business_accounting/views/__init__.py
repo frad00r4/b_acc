@@ -6,3 +6,4 @@ import index
 import nomenclatures
 import documents
 import attributes
+import discounts

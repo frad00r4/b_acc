@@ -11,7 +11,7 @@ from ..models import Documents
 from ...exts import connection
 from . import business_accounting
 
-class AddDocuments(Form):
+class AddDocument(Form):
     name = StringField(u'Название', validators=[DataRequired()])
     description = StringField(u'Описание документа')
     submit = SubmitField(u'Отправить')
@@ -25,7 +25,7 @@ def documents():
 
 @business_accounting.route('documents/add', methods=('POST', 'GET'))
 def add_document():
-    form = AddDocuments()
+    form = AddDocument()
 
     if request.method == 'POST' and form.validate():
         document = Documents(name=form.name.data, description=form.description.data)

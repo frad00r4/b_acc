@@ -12,7 +12,7 @@ from ...exts import connection
 from . import business_accounting
 
 
-class AddNomenclatures(Form):
+class AddNomenclature(Form):
     internal_code = IntegerField(u'Внутренний код', validators=[DataRequired()])
     name = StringField(u'Название', validators=[DataRequired()])
     ext_name = StringField(u'Дополнительная информация')
@@ -27,12 +27,12 @@ def nomenclatures():
 
 @business_accounting.route('nomenclatures/add', methods=('POST', 'GET'))
 def add_nomenclature():
-    form = AddNomenclatures()
+    form = AddNomenclature()
 
     if request.method == 'POST' and form.validate():
         nomenclature = Nomenclatures(internal_code=int(form.internal_code.data),
                                      name=form.name.data,
-                                     ext_name=form.ext_name.data)
+                                     ext_name=(form.ext_name.data if form.ext_name.data else None))
         connection.session.add(nomenclature)
         try:
             connection.session.commit()

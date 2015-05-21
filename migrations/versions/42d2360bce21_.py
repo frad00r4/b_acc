@@ -39,31 +39,32 @@ def upgrade():
     op.create_table(
         'incoming',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('incoming_date', sa.Integer, index=True),
+        sa.Column('incoming_date', sa.DateTime, index=True),
         sa.Column('document_id', sa.Integer, nullable=False),
     )
 
     op.create_table(
         'goods',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('incoming_id', sa.Integer, nullable=False),
-        sa.Column('incoming_date', sa.Integer, index=True),
         sa.Column('nomenclature_id', sa.Integer, nullable=False),
         sa.Column('attribute_id', sa.Integer, nullable=False),
-        sa.Column('incomig_price', sa.Integer, nullable=False),
-        sa.Column('outgoing_price', sa.Integer, nullable=True),
+        sa.Column('incoming_id', sa.Integer, nullable=False),
+        sa.Column('incoming_date', sa.Integer, index=True),
         sa.Column('outgoing_date', sa.DateTime, nullable=True),
+        sa.Column('incoming_price', sa.Integer, nullable=False),
+        sa.Column('outgoing_price', sa.Integer, nullable=True)
     )
 
     op.create_table(
         'discounts',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('sale', sa.Integer, nullable=False),
-        sa.Column('sale_type', sa.Enum('strict', 'percent'), nullable=False),
+        sa.Column('amount', sa.Integer, nullable=False),
+        sa.Column('type', sa.Enum('strict', 'percent'), nullable=False)
     )
 
     op.create_table(
         'price',
+        sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('goods_id', sa.Integer, nullable=False),
         sa.Column('attribute_id', sa.Integer, nullable=True),
         sa.Column('price', sa.Integer, nullable=False),
@@ -73,7 +74,6 @@ def upgrade():
         'accounts',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
-        sa.Column('currency', sa.Unicode(3), nullable=False)
     )
 
     op.create_table(
@@ -81,7 +81,8 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('account_id', sa.Integer, nullable=False),
         sa.Column('document_id', sa.Integer, nullable=False),
-        sa.Column('sale_type', sa.Enum('incoming', 'outgoing'), nullable=False),
+        sa.Column('goods_id', sa.Integer, nullable=True),
+        sa.Column('action_type', sa.Enum('incoming', 'outgoing'), nullable=False),
         sa.Column('amount', sa.Integer, nullable=False),
     )
 
@@ -146,6 +147,14 @@ def upgrade():
         'account_actions',
         'documents',
         ['document_id'],
+        ['id']
+    )
+
+    op.create_foreign_key(
+        'fk_goods_account_actions',
+        'account_actions',
+        'goods',
+        ['goods_id'],
         ['id']
     )
 
