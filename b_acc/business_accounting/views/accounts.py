@@ -20,7 +20,6 @@ class AddAccount(Form):
 @business_accounting.route('accounts')
 def accounts():
     models = Accounts.query.all()
-    print models
     return render_template('b_acc/accounts.html', accounts=models)
 
 

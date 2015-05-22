@@ -8,3 +8,4 @@ import documents
 import attributes
 import discounts
 import accounts
+import storage

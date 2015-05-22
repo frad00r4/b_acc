@@ -22,7 +22,6 @@ class AddDiscount(Form):
 @business_accounting.route('discounts')
 def discounts():
     models = Discounts.query.all()
-    print models
     return render_template('b_acc/discounts.html', discounts=models)
 
 
