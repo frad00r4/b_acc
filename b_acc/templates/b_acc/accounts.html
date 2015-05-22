@@ -1,11 +1,11 @@
 {% extends "layouts/main.html" %}
 
-{% set  title = "Номенклатуры" %}
+{% set  title = "Счета" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/nomenclatures/add">
+            <a href="/b_acc/accounts/add">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -13,16 +13,12 @@
     <div class="row">
         <table class="table">
             <thead>
-                <th>Внутренний код</th>
                 <th>Название</th>
-                <th>Дополнительная информация</th>
             </thead>
             <tbody>
-            {% for nomenclature in nomenclatures %}
+            {% for account in accounts %}
                 <tr>
-                    <td>{{ nomenclature.internal_code }}</td>
-                    <td>{{ nomenclature.name }}</td>
-                    <td>{{ nomenclature.ext_name }}</td>
+                    <td>{{ account.name }}</td>
                 </tr>
             {% endfor %}
             </tbody>

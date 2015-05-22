@@ -18,6 +18,7 @@ class Documents(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), unique=True)
     description = connection.Column(connection.String(255))
+    mysql_character_set = 'utf8'
 
 
 class Incoming(connection.Model):

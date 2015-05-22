@@ -7,3 +7,4 @@ import nomenclatures
 import documents
 import attributes
 import discounts
+import accounts

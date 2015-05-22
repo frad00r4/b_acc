@@ -20,7 +20,8 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('internal_code', sa.Integer, unique=True),
         sa.Column('name', sa.Unicode(255), nullable=False),
-        sa.Column('ext_name', sa.Unicode(255), nullable=True)
+        sa.Column('ext_name', sa.Unicode(255), nullable=True),
+        mysql_charset='utf8'
     )
 
     documents_table = op.create_table(
@@ -28,12 +29,14 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
         sa.Column('description', sa.Unicode(255), nullable=True),
+        mysql_charset='utf8'
     )
 
     op.create_table(
         'attributes',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
+        mysql_charset='utf8'
     )
 
     op.create_table(
@@ -41,6 +44,7 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('incoming_date', sa.DateTime, index=True),
         sa.Column('document_id', sa.Integer, nullable=False),
+        mysql_charset='utf8'
     )
 
     op.create_table(
@@ -52,14 +56,16 @@ def upgrade():
         sa.Column('incoming_date', sa.Integer, index=True),
         sa.Column('outgoing_date', sa.DateTime, nullable=True),
         sa.Column('incoming_price', sa.Integer, nullable=False),
-        sa.Column('outgoing_price', sa.Integer, nullable=True)
+        sa.Column('outgoing_price', sa.Integer, nullable=True),
+        mysql_charset='utf8'
     )
 
     op.create_table(
         'discounts',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('amount', sa.Integer, nullable=False),
-        sa.Column('type', sa.Enum('strict', 'percent'), nullable=False)
+        sa.Column('type', sa.Enum('strict', 'percent'), nullable=False),
+        mysql_charset='utf8'
     )
 
     op.create_table(
@@ -68,12 +74,14 @@ def upgrade():
         sa.Column('goods_id', sa.Integer, nullable=False),
         sa.Column('attribute_id', sa.Integer, nullable=True),
         sa.Column('price', sa.Integer, nullable=False),
+        mysql_charset='utf8'
     )
 
     op.create_table(
         'accounts',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
+        mysql_charset='utf8'
     )
 
     op.create_table(
@@ -84,6 +92,7 @@ def upgrade():
         sa.Column('goods_id', sa.Integer, nullable=True),
         sa.Column('action_type', sa.Enum('incoming', 'outgoing'), nullable=False),
         sa.Column('amount', sa.Integer, nullable=False),
+        mysql_charset='utf8'
     )
 
     op.create_foreign_key(

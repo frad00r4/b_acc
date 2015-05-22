@@ -17,10 +17,10 @@
                 <th>Дополнительная информация</th>
             </thead>
             <tbody>
-            {% for nomenclature in nomenclatures %}
+            {% for document in documents %}
                 <tr>
-                    <td>{{ nomenclature.name }}</td>
-                    <td>{{ nomenclature.description }}</td>
+                    <td>{{ document.name }}</td>
+                    <td>{{ document.description }}</td>
                 </tr>
             {% endfor %}
             </tbody>
