@@ -1,0 +1,36 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Приход товара" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-2">
+            <a href="/b_acc/incoming/add">
+                <button type="button" class="btn btn-info">Добавить</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Дата прихода</th>
+                <th>Документ</th>
+                <th>Операции</th>
+            </thead>
+            <tbody>
+            {% for incoming in data %}
+                <tr>
+                    <td>{{ incoming.incoming_date }}</td>
+                    <td>{{ incoming.document.name }}</td>
+                    <td>
+                        <a href="/b_acc/incoming/{{ incoming.id }}">
+                            <button type="button" class="btn btn-info">Редактировать</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

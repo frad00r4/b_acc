@@ -12,12 +12,15 @@ class Nomenclatures(connection.Model):
     internal_code = connection.Column(connection.Integer, unique=True)
     name = connection.Column(connection.String(255))
     ext_name = connection.Column(connection.String(255), nullable=True)
+    mysql_character_set = 'utf8'
 
 
 class Documents(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), unique=True)
     description = connection.Column(connection.String(255))
+    incoming = connection.relationship('Incoming', backref='document', lazy='dynamic')
+    actions = connection.relationship('AccountsActions', backref='document', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -25,6 +28,7 @@ class Incoming(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     incoming_date = connection.Column(connection.DateTime, index=True)
     document_id = connection.Column(connection.Integer, connection.ForeignKey('documents.id'), nullable=False)
+    mysql_character_set = 'utf8'
 
 
 class Goods(connection.Model):
@@ -36,17 +40,20 @@ class Goods(connection.Model):
     outgoing_date = connection.Column(connection.DateTime, index=True)
     incoming_price = connection.Column(connection.Integer, nullable=False)
     outgoing_price = connection.Column(connection.Integer, nullable=False)
+    mysql_character_set = 'utf8'
 
 
 class Discounts(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     amount = connection.Column(connection.Integer, nullable=False)
     type = connection.Column(connection.Enum('strict', 'percent'), nullable=False)
+    mysql_character_set = 'utf8'
 
 
 class Attributes(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), unique=True)
+    mysql_character_set = 'utf8'
 
 
 class Price(connection.Model):
@@ -54,11 +61,13 @@ class Price(connection.Model):
     goods_id = connection.Column(connection.Integer, connection.ForeignKey('goods.id'))
     attribute_id = connection.Column(connection.Integer, connection.ForeignKey('attributes.id'), nullable=True)
     price = connection.Column(connection.Integer, nullable=False)
+    mysql_character_set = 'utf8'
 
 
 class Accounts(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), nullable=False, unique=True)
+    mysql_character_set = 'utf8'
 
 
 class AccountsActions(connection.Model):
@@ -68,3 +77,4 @@ class AccountsActions(connection.Model):
     goods_id = connection.Column(connection.Integer, connection.ForeignKey('goods.id'), nullable=True)
     action_type = connection.Column(connection.Enum('incoming', 'outgoing'), nullable=False)
     amount = connection.Column(connection.Integer, nullable=False)
+    mysql_character_set = 'utf8'
