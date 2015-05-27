@@ -1,0 +1,27 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Поставка товара - добавка" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    {{ form.nomenclature_id.label }}
+                    {{ form.nomenclature_id(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.attribute_id.label }}
+                    {{ form.attribute_id(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.incoming_price.label }}
+                    {{ form.incoming_price(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-default") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

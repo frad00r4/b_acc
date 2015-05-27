@@ -12,6 +12,7 @@ class Nomenclatures(connection.Model):
     internal_code = connection.Column(connection.Integer, unique=True)
     name = connection.Column(connection.String(255))
     ext_name = connection.Column(connection.String(255), nullable=True)
+    goods = connection.relationship('Goods', backref='nomenclature', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -28,6 +29,7 @@ class Incoming(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     incoming_date = connection.Column(connection.DateTime, index=True)
     document_id = connection.Column(connection.Integer, connection.ForeignKey('documents.id'), nullable=False)
+    goods = connection.relationship('Goods', backref='incoming', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -53,6 +55,7 @@ class Discounts(connection.Model):
 class Attributes(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), unique=True)
+    goods = connection.relationship('Goods', backref='attribute', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 

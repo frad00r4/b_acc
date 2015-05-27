@@ -5,7 +5,7 @@
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/goods_incoming/add">
+            <a href="/b_acc/incoming/{{ incoming.id }}/add">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -15,17 +15,15 @@
             <thead>
                 <th>ID номенклатуры</th>
                 <th>Атрибут</th>
-                <th>Кол-во</th>
                 <th>Операции</th>
             </thead>
             <tbody>
             {% for item in items %}
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ item.nomenclature.internal_code }}</td>
+                    <td>{{ item.attribute.name }}</td>
                     <td>
-                        <a href="/b_acc/goods_incoming/{{ incoming.id }}">
+                        <a href="/b_acc/incoming/{{ incoming.id }}">
                             <button type="button" class="btn btn-info">Редактировать</button>
                         </a>
                     </td>
