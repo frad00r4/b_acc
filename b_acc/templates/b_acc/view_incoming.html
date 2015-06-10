@@ -23,8 +23,11 @@
                     <td>{{ item.nomenclature.internal_code }}</td>
                     <td>{{ item.attribute.name }}</td>
                     <td>
-                        <a href="/b_acc/incoming/{{ incoming.id }}">
+                        <a href="/b_acc/incoming/{{ incoming.id }}/{{ item.id }}/edit ">
                             <button type="button" class="btn btn-info">Редактировать</button>
+                        </a>
+                        <a href="/b_acc/incoming/{{ incoming.id }}/{{ item.id }}/del ">
+                            <button type="button" class="btn btn-info">Удалить</button>
                         </a>
                     </td>
                 </tr>

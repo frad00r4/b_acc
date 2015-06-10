@@ -65,7 +65,6 @@ def view_incoming_append(incoming_id):
     incoming = Incoming.query.filter_by(id=incoming_id).first()
 
     if incoming:
-
         form = AddItem()
         nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
         attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
@@ -93,3 +92,15 @@ def view_incoming_append(incoming_id):
     else:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incoming'))
+
+@business_accounting.route('incoming/<incoming_id>/<item_id>/edit')
+def edit_incoming_item(incoming_id, item_id):
+    incoming = Incoming.query.filter_by(id=incoming_id).first()
+    item = Goods.query.filter_by(id=item_id).first()
+
+    if not incoming:
+        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        return redirect(url_for('b_acc.incoming'))
+
+
+    return 'TEST'
