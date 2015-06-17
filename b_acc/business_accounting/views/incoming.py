@@ -64,36 +64,36 @@ def view_incoming(incoming_id):
 def view_incoming_append(incoming_id):
     incoming = Incoming.query.filter_by(id=incoming_id).first()
 
-    if incoming:
-        form = AddItem()
-        nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
-        attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
-        form.nomenclature_id.choices = nomenclatures
-        form.attribute_id.choices = attributes
-
-        if request.method == 'POST' and form.validate():
-            item = Goods(nomenclature_id = form.nomenclature_id.data,
-                         attribute_id = form.attribute_id.data,
-                         incoming_id = incoming.id,
-                         incoming_date = incoming.incoming_date,
-                         outgoing_date = None,
-                         incoming_price = form.incoming_price.data,
-                         outgoing_price = None)
-            connection.session.add(item)
-            try:
-                connection.session.commit()
-                flash(u'Поставка товара добавлена', 'success')
-                return redirect(url_for('b_acc.view_incoming', incoming_id=incoming.id))
-            except Exception as e:
-                flash(u'Ошибка DB: %s' % e.message, 'danger')
-
-        return render_template('b_acc/view_incoming_append.html', form=form)
-
-    else:
+    if not incoming:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incoming'))
 
-@business_accounting.route('incoming/<incoming_id>/<item_id>/edit')
+    form = AddItem()
+    nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
+    attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
+    form.nomenclature_id.choices = nomenclatures
+    form.attribute_id.choices = attributes
+
+    if request.method == 'POST' and form.validate():
+        item = Goods(nomenclature_id = form.nomenclature_id.data,
+                     attribute_id = form.attribute_id.data,
+                     incoming_id = incoming.id,
+                     incoming_date = incoming.incoming_date,
+                     outgoing_date = None,
+                     incoming_price = form.incoming_price.data,
+                     outgoing_price = None)
+        connection.session.add(item)
+        try:
+            connection.session.commit()
+            flash(u'Поставка товара добавлена', 'success')
+            return redirect(url_for('b_acc.view_incoming', incoming_id=incoming.id))
+        except Exception as e:
+            flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return render_template('b_acc/view_incoming_append.html', form=form)
+
+
+@business_accounting.route('incoming/<incoming_id>/<item_id>/edit', methods=('POST', 'GET'))
 def edit_incoming_item(incoming_id, item_id):
     incoming = Incoming.query.filter_by(id=incoming_id).first()
     item = Goods.query.filter_by(id=item_id).first()
@@ -102,5 +102,48 @@ def edit_incoming_item(incoming_id, item_id):
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incoming'))
 
+    if not item:
+        flash(u'Вещи: %s не существует' % item_id, 'danger')
+        return redirect(url_for('b_acc.incoming', incoming_id=incoming.id))
 
-    return 'TEST'
+    form = AddItem(obj=item)
+    nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
+    attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
+    form.nomenclature_id.choices = nomenclatures
+    form.attribute_id.choices = attributes
+
+    if request.method == 'POST' and form.validate():
+        item.nomenclature_id = form.nomenclature_id.data,
+        item.attribute_id = form.attribute_id.data,
+        item.incoming_price = form.incoming_price.data,
+        try:
+            connection.session.commit()
+            flash(u'Поставка товара изменена', 'success')
+            return redirect(url_for('b_acc.view_incoming', incoming_id=incoming.id))
+        except Exception as e:
+            flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return render_template('b_acc/edit_incoming_item.html', form=form)
+
+
+@business_accounting.route('incoming/<incoming_id>/<item_id>/del')
+def del_incoming_item(incoming_id, item_id):
+    incoming = Incoming.query.filter_by(id=incoming_id).first()
+    item = Goods.query.filter_by(id=item_id).first()
+
+    if not incoming:
+        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        return redirect(url_for('b_acc.incoming'))
+
+    if not item:
+        flash(u'Вещи: %s не существует' % item_id, 'danger')
+        return redirect(url_for('b_acc.incoming', incoming_id=incoming.id))
+
+    connection.session.delete(item)
+    try:
+        connection.session.commit()
+        flash(u'Поставка товара изменена - вещь удалена', 'success')
+    except Exception as e:
+        flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return redirect(url_for('b_acc.view_incoming', incoming_id=incoming.id))
