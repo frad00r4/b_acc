@@ -33,9 +33,8 @@ def incoming():
 
 @business_accounting.route('incoming/add', methods=('POST', 'GET'))
 def add_incoming():
-    documents = [(doc.id, doc.name) for doc in Documents.query.all()]
     form = AddIncoming()
-    form.document_id.choices = documents
+    form.document_id.choices = [(doc.id, doc.name) for doc in Documents.query.all()]
 
     if request.method == 'POST' and form.validate():
         incoming = Incoming(incoming_date=form.incoming_date.data, document_id=form.document_id.data)
@@ -52,13 +51,14 @@ def add_incoming():
 
 @business_accounting.route('incoming/<incoming_id>')
 def view_incoming(incoming_id):
-    incoming = Incoming.query.filter_by(id=incoming_id).first()
-    if incoming:
+    model = Incoming.query.filter_by(id=incoming_id).first()
+    if model:
         goods = Goods.query.filter_by(incoming_id=incoming_id).all()
-        return render_template('b_acc/view_incoming.html', incoming=incoming, items=goods)
+        return render_template('b_acc/view_incoming.html', incoming=model, items=goods)
     else:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incoming'))
+
 
 @business_accounting.route('incoming/<incoming_id>/add', methods=('POST', 'GET'))
 def view_incoming_append(incoming_id):
@@ -69,19 +69,17 @@ def view_incoming_append(incoming_id):
         return redirect(url_for('b_acc.incoming'))
 
     form = AddItem()
-    nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
-    attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
-    form.nomenclature_id.choices = nomenclatures
-    form.attribute_id.choices = attributes
+    form.nomenclature_id.choices = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
+    form.attribute_id.choices = [(attr.id, attr.name) for attr in Attributes.query.all()]
 
     if request.method == 'POST' and form.validate():
-        item = Goods(nomenclature_id = form.nomenclature_id.data,
-                     attribute_id = form.attribute_id.data,
-                     incoming_id = incoming.id,
-                     incoming_date = incoming.incoming_date,
-                     outgoing_date = None,
-                     incoming_price = form.incoming_price.data,
-                     outgoing_price = None)
+        item = Goods(nomenclature_id=form.nomenclature_id.data,
+                     attribute_id=form.attribute_id.data,
+                     incoming_id=incoming.id,
+                     incoming_date=incoming.incoming_date,
+                     outgoing_date=None,
+                     incoming_price=form.incoming_price.data,
+                     outgoing_price=None)
         connection.session.add(item)
         try:
             connection.session.commit()
@@ -107,10 +105,8 @@ def edit_incoming_item(incoming_id, item_id):
         return redirect(url_for('b_acc.incoming', incoming_id=incoming.id))
 
     form = AddItem(obj=item)
-    nomenclatures = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
-    attributes = [(attr.id, attr.name) for attr in Attributes.query.all()]
-    form.nomenclature_id.choices = nomenclatures
-    form.attribute_id.choices = attributes
+    form.nomenclature_id.choices = [(nom.id, nom.internal_code) for nom in Nomenclatures.query.all()]
+    form.attribute_id.choices = [(attr.id, attr.name) for attr in Attributes.query.all()]
 
     if request.method == 'POST' and form.validate():
         item.nomenclature_id = form.nomenclature_id.data,
