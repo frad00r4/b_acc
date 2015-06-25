@@ -1,0 +1,39 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Продажи" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-2">
+            <a href="/b_acc/sale/add">
+                <button type="button" class="btn btn-info">Добавить продажу</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Дата продажи</th>
+                <th>Товар</th>
+                <th>Аттрибут</th>
+                <th>Цена</th>
+            </thead>
+            <tbody>
+            {% for item in models %}
+                <tr>
+                    <td>{{ item.outgoing_date }}</td>
+                    <td>{{ item.nomenclature.internal_code }}</td>
+                    <td>{{ item.attribute.name }}</td>
+                    <td>{{ item.outgoing_price }}</td>
+                    <td>
+                        <a href="/b_acc/incoming/{{ incoming.id }}">
+                            <button type="button" class="btn btn-info">Редактировать</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
