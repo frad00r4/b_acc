@@ -1,0 +1,48 @@
+{% extends "layouts/main.html" %}
+
+{% macro render_pagination(pagination, endpoint) -%}
+    <div class=pagination>
+        {% if pagination.has_prev %}
+        <a href="{{ url_for(endpoint, page=pagination.page - 1) }}">&laquo; </a>
+        {% endif %}
+        {% for page in pagination.iter_pages() %}
+            {% if page %}
+                {% if page != pagination.page %}
+        <a href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+                {% else %}
+        <strong>{{ page }}</strong>
+                {% endif %}
+            {% else %}
+        <span class=ellipsis>…</span>
+            {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+        <a href="{{ url_for(endpoint, page=pagination.page + 1) }}"> &raquo;</a>
+        {% endif %}
+    </div>
+{%- endmacro %}
+
+{% set  title = "Склад" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Внутренний код</th>
+                <th>Аттрибут</th>
+                <th>Дата прихода</th>
+            </thead>
+            <tbody>
+            {% for item in pagination.items %}
+                <tr>
+                    <td>{{ item.nomenclature.internal_code }}</td>
+                    <td>{{ item.attribute.name }}</td>
+                    <td>{{ item.incoming_date }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {{ render_pagination(pagination, "b_acc.storage") }}
+</div>
+{% endblock %}

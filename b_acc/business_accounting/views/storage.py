@@ -3,15 +3,15 @@
 __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
 
-from flask import request, render_template, flash, redirect, url_for
-from ..models import Goods, Nomenclatures, Attributes, Incoming
-from ...exts import connection
+from flask import render_template
+from ..models import Goods
 from . import business_accounting
 
 
-@business_accounting.route('storage')
-def storage():
-    models = Goods.query.paginate(1,3)
-    print models
-    #return render_template('b_acc/storage.html', goods=models)
-    return 'TEST'
+@business_accounting.route('storage', defaults={'page': 1})
+@business_accounting.route('storage/<int:page>')
+def storage(page):
+    pagination = Goods.query.paginate(page, 1)
+    print pagination.items
+
+    return render_template('b_acc/storage.html', pagination=pagination)
