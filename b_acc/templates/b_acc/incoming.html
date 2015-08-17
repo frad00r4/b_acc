@@ -15,13 +15,15 @@
             <thead>
                 <th>Дата прихода</th>
                 <th>Документ</th>
+                <th>Сумма поступления</th>
                 <th>Операции</th>
             </thead>
             <tbody>
             {% for incoming in data %}
                 <tr>
                     <td>{{ incoming.incoming_date }}</td>
-                    <td>{{ incoming.document.name }}</td>
+                    <td>{{ incoming.name }}</td>
+                    <td>{% if incoming.sum %}{{ incoming.sum }}{% else %}0{% endif %}</td>
                     <td>
                         <a href="/b_acc/incoming/{{ incoming.id }}">
                             <button type="button" class="btn btn-info">Редактировать</button>

@@ -4,6 +4,11 @@
 {% block body %}
 <div class="base-template">
     <div class="row">
+        <b>Приход от {{ incoming.incoming_date }} на основании документа {{ incoming.document.name }}</b>
+        <br/>
+        <br/>
+    </div>
+    <div class="row">
         <div class="col-md-2">
             <a href="/b_acc/incoming/{{ incoming.id }}/add">
                 <button type="button" class="btn btn-info">Добавить</button>
@@ -15,6 +20,7 @@
             <thead>
                 <th>ID номенклатуры</th>
                 <th>Атрибут</th>
+                <th>Цена закупки</th>
                 <th>Операции</th>
             </thead>
             <tbody>
@@ -22,6 +28,7 @@
                 <tr>
                     <td>{{ item.nomenclature.internal_code }}</td>
                     <td>{{ item.attribute.name }}</td>
+                    <td>{{ item.incoming_price }}</td>
                     <td>
                         <a href="/b_acc/incoming/{{ incoming.id }}/{{ item.id }}/edit ">
                             <button type="button" class="btn btn-info">Редактировать</button>

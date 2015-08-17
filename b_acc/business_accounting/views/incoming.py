@@ -7,6 +7,7 @@ from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
 from wtforms import SubmitField, DateTimeField, SelectField, IntegerField
 from wtforms.validators import DataRequired
+from sqlalchemy.sql.functions import func
 from ...exts import connection
 from ..models import Incoming, Documents, Goods, Nomenclatures, Attributes
 from . import business_accounting
@@ -27,7 +28,21 @@ class AddItem(Form):
 
 @business_accounting.route('incoming')
 def incoming():
-    models = Incoming.query.all()
+    """
+    SELECT
+    incoming.id AS incoming_id,
+    incoming.incoming_date AS incoming_incoming_date,
+    (SELECT sum(goods.incoming_price) FROM goods WHERE goods.incoming_id = incoming.id) AS sum,
+    documents.name AS documents_name
+    FROM incoming JOIN documents ON documents.id = incoming.document_id
+    """
+
+    subreq = Goods.query.with_entities(func.sum(Goods.incoming_price)).filter_by(incoming_id=Incoming.id).subquery()
+    models = Incoming.query.with_entities(Incoming.id,
+                                          Incoming.incoming_date,
+                                          subreq.as_scalar().label('sum'),
+                                          Documents.name).join(Documents).all()
+
     return render_template('b_acc/incoming.html', data=models)
 
 
@@ -37,8 +52,8 @@ def add_incoming():
     form.document_id.choices = [(doc.id, doc.name) for doc in Documents.query.all()]
 
     if request.method == 'POST' and form.validate():
-        incoming = Incoming(incoming_date=form.incoming_date.data, document_id=form.document_id.data)
-        connection.session.add(incoming)
+        incoming_obj = Incoming(incoming_date=form.incoming_date.data, document_id=form.document_id.data)
+        connection.session.add(incoming_obj)
         try:
             connection.session.commit()
             flash(u'Поставка товара добавлена', 'success')
