@@ -21,6 +21,4 @@ def storage(page):
     """
 
     pagination = Goods.query.paginate(page, 1)
-    print pagination.items
-
     return render_template('b_acc/storage.html', pagination=pagination)
