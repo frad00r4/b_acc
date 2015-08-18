@@ -16,20 +16,17 @@
                 <th>Дата продажи</th>
                 <th>Товар</th>
                 <th>Аттрибут</th>
-                <th>Цена</th>
+                <th>Цена продажи</th>
+                <th>Выгода</th>
             </thead>
             <tbody>
-            {% for item in models %}
+            {% for sale in sales %}
                 <tr>
-                    <td>{{ item.outgoing_date }}</td>
-                    <td>{{ item.nomenclature.internal_code }}</td>
-                    <td>{{ item.attribute.name }}</td>
-                    <td>{{ item.outgoing_price }}</td>
-                    <td>
-                        <a href="/b_acc/incoming/{{ incoming.id }}">
-                            <button type="button" class="btn btn-info">Редактировать</button>
-                        </a>
-                    </td>
+                    <td>{{ sale.outgoing_date }}</td>
+                    <td>{{ sale.nomenclature.internal_code }} - {{ sale.nomenclature.name }}</td>
+                    <td>{{ sale.attribute.name }}</td>
+                    <td>{{ sale.outgoing_price }}</td>
+                    <td>{{ sale.outgoing_price - sale.incoming_price }}</td>
                 </tr>
             {% endfor %}
             </tbody>

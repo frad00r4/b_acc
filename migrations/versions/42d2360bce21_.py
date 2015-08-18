@@ -44,6 +44,7 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('incoming_date', sa.DateTime, index=True),
         sa.Column('document_id', sa.Integer, nullable=False),
+        sa.Column('account_id', sa.Integer, nullable=False),
         mysql_charset='utf8'
     )
 
@@ -53,7 +54,7 @@ def upgrade():
         sa.Column('nomenclature_id', sa.Integer, nullable=False),
         sa.Column('attribute_id', sa.Integer, nullable=False),
         sa.Column('incoming_id', sa.Integer, nullable=False),
-        sa.Column('incoming_date', sa.Integer, index=True),
+        sa.Column('incoming_date', sa.DateTime, index=True),
         sa.Column('outgoing_date', sa.DateTime, nullable=True),
         sa.Column('incoming_price', sa.Integer, nullable=False),
         sa.Column('outgoing_price', sa.Integer, nullable=True),
@@ -81,6 +82,8 @@ def upgrade():
         'accounts',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.Unicode(255), nullable=False, unique=True),
+        sa.Column('total', sa.Integer, nullable=False),
+        sa.Column('actived', sa.Boolean, nullable=False, default=1),
         mysql_charset='utf8'
     )
 
@@ -116,6 +119,14 @@ def upgrade():
         'incoming',
         'documents',
         ['document_id'],
+        ['id']
+    )
+
+    op.create_foreign_key(
+        'fk_accounts_incoming',
+        'incoming',
+        'accounts',
+        ['account_id'],
         ['id']
     )
 
@@ -177,12 +188,14 @@ def upgrade():
 
 def downgrade():
     op.drop_constraint('fk_documents_incoming', 'incoming', type='foreignkey')
+    op.drop_constraint('fk_accounts_incoming', 'incoming', type='foreignkey')
     op.drop_constraint('fk_attributes_goods', 'goods', type='foreignkey')
     op.drop_constraint('fk_nomenclatures_goods', 'goods', type='foreignkey')
     op.drop_constraint('fk_incoming_goods', 'goods', type='foreignkey')
     op.drop_constraint('fk_goods_price', 'price', type='foreignkey')
     op.drop_constraint('fk_attributes_price', 'price', type='foreignkey')
     op.drop_constraint('fk_accounts_account_actions', 'account_actions', type='foreignkey')
+    op.drop_constraint('fk_goods_account_actions', 'account_actions', type='foreignkey')
     op.drop_constraint('fk_documents_account_actions', 'account_actions', type='foreignkey')
 
     op.drop_table('goods')

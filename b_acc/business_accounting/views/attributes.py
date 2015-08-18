@@ -11,6 +11,7 @@ from ..models import Attributes
 from ...exts import connection
 from . import business_accounting
 
+
 class AddAttribute(Form):
     name = StringField(u'Название', validators=[DataRequired()])
     submit = SubmitField(u'Отправить')
@@ -18,9 +19,8 @@ class AddAttribute(Form):
 
 @business_accounting.route('attributes')
 def attributes():
-    attributes = Attributes.query.all()
-    return render_template('b_acc/attributes.html', attributes=attributes)
-
+    attributes_models = Attributes.query.all()
+    return render_template('b_acc/attributes.html', attributes=attributes_models)
 
 
 @business_accounting.route('attributes/add', methods=('POST', 'GET'))

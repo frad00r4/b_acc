@@ -14,11 +14,22 @@
         <table class="table">
             <thead>
                 <th>Название</th>
+                <th>Состояние счета</th>
+                <th>Операции</th>
             </thead>
             <tbody>
             {% for account in accounts %}
                 <tr>
                     <td>{{ account.name }}</td>
+                    <td>{{ account.total }}</td>
+                    <td>
+                        <a href="/b_acc/accounts/{{ account.id }}">
+                            <button type="button" class="btn btn-info">Просмотр</button>
+                        </a>
+                        <a href="/b_acc/accounts/{{ account.id }}/del">
+                            <button type="button" class="btn btn-danger">Закрыть</button>
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

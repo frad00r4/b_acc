@@ -1,6 +1,6 @@
 {% extends "layouts/main.html" %}
 
-{% set  title = "Новая поставка товара" %}
+{% set  title = "Продажа" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
@@ -8,9 +8,9 @@
             <form method="POST">
                 {{ form.csrf_token }}
                 <div class="form-group">
-                    {{ form.incoming_date.label }}
+                    {{ form.outgoing_date.label }}
                     <div class='input-group date' id='datetimepicker2'>
-                        {{ form.incoming_date(class="form-control") }}
+                        {{ form.outgoing_date(class="form-control") }}
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
@@ -31,6 +31,18 @@
                 {{ form.account_id.label }}
                 <div class="form-group">
                     {{ form.account_id(class="form-control") }}
+                </div>
+                {{ form.nomenclature_id.label }}
+                <div class="form-group">
+                    {{ form.nomenclature_id(class="form-control") }}
+                </div>
+                {{ form.attribute_id.label }}
+                <div class="form-group">
+                    {{ form.attribute_id(class="form-control") }}
+                </div>
+                {{ form.outgoing_price.label }}
+                <div class="form-group">
+                    {{ form.outgoing_price(class="form-control") }}
                 </div>
                 {{ form.submit(class="btn btn-default") }}
             </form>

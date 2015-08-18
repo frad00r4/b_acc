@@ -21,7 +21,7 @@ class Documents(connection.Model):
     name = connection.Column(connection.String(255), unique=True)
     description = connection.Column(connection.String(255))
     incoming = connection.relationship('Incoming', backref='document', lazy='dynamic')
-    actions = connection.relationship('AccountsActions', backref='document', lazy='dynamic')
+    actions = connection.relationship('AccountActions', backref='document', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -29,6 +29,7 @@ class Incoming(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     incoming_date = connection.Column(connection.DateTime, index=True)
     document_id = connection.Column(connection.Integer, connection.ForeignKey('documents.id'), nullable=False)
+    account_id = connection.Column(connection.Integer, connection.ForeignKey('accounts.id'), nullable=False)
     goods = connection.relationship('Goods', backref='incoming', lazy='dynamic')
     mysql_character_set = 'utf8'
 
@@ -42,6 +43,7 @@ class Goods(connection.Model):
     outgoing_date = connection.Column(connection.DateTime, index=True)
     incoming_price = connection.Column(connection.Integer, nullable=False)
     outgoing_price = connection.Column(connection.Integer, nullable=False)
+    actions = connection.relationship('AccountActions', backref='goods', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -56,6 +58,7 @@ class Attributes(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), unique=True)
     goods = connection.relationship('Goods', backref='attribute', lazy='dynamic')
+    price = connection.relationship('Price', backref='attribute', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -70,10 +73,14 @@ class Price(connection.Model):
 class Accounts(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     name = connection.Column(connection.String(255), nullable=False, unique=True)
+    total = connection.Column(connection.Integer, nullable=False)
+    actived = connection.Column(connection.Boolean, nullable=False, default=1)
+    incoming = connection.relationship('Incoming', backref='account', lazy='dynamic')
+    actions = connection.relationship('AccountActions', backref='account', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
-class AccountsActions(connection.Model):
+class AccountActions(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
     account_id = connection.Column(connection.Integer, connection.ForeignKey('accounts.id'), nullable=False)
     document_id = connection.Column(connection.Integer, connection.ForeignKey('documents.id'), nullable=False)

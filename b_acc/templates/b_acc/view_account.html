@@ -1,0 +1,33 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Просмотр счета" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        {% if account.actived == 0 %}<h1 class="text-danger">СЧЕТ ЗАКРЫТ</h1>{% endif %}
+        <h3>Движения денежных средств по счету <span class="text-success">{{ account.name }}</span></h3>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Дата операции</th>
+                <th>Действие</th>
+                <th>Документ</th>
+                <th>Товар</th>
+                <th>Сумма</th>
+            </thead>
+            <tbody>
+            {% for action in actions %}
+                <tr>
+                    <td></td>
+                    <td>{{ action.action_type }}</td>
+                    <td>{{ action.document.name }}</td>
+                    <td>{% if action.goods %}{{ action.goods.nomenclature.internal_code }}{% endif %}</td>
+                    <td>{{ action.amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

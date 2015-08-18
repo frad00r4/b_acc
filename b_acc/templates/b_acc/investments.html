@@ -1,23 +1,23 @@
 {% extends "layouts/main.html" %}
 
-{% set title = "Поставка товара - добавка" %}
+{% set  title = "Поступление средств (Инвестиции)" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-6">
             <form method="POST">
                 {{ form.csrf_token }}
-                {{ form.nomenclature_id.label }}
                 <div class="form-group">
-                    {{ form.nomenclature_id(class="form-control") }}
+                    {{ form.account_id.label }}
+                    {{ form.account_id(class="form-control") }}
                 </div>
-                {{ form.attribute_id.label }}
                 <div class="form-group">
-                    {{ form.attribute_id(class="form-control") }}
+                    {{ form.document_id.label }}
+                    {{ form.document_id(class="form-control") }}
                 </div>
-                {{ form.incoming_price.label }}
                 <div class="form-group">
-                    {{ form.incoming_price(class="form-control") }}
+                    {{ form.amount.label }}
+                    {{ form.amount(class="form-control") }}
                 </div>
                 {{ form.submit(class="btn btn-default") }}
             </form>

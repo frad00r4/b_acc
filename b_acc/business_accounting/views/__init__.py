@@ -11,3 +11,4 @@ import accounts
 import storage
 import incoming
 import sale
+import investments
