@@ -1,11 +1,12 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Приход товара" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/incoming/add">
+            <a href="{{ url_for('b_acc.add_incoming') }}">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -19,16 +20,16 @@
                 <th>Операции</th>
             </thead>
             <tbody>
-            {% for incoming in data %}
+            {% for item in pagination.items %}
                 <tr>
-                    <td>{{ incoming.incoming_date }}</td>
-                    <td>{{ incoming.name }}</td>
-                    <td>{% if incoming.sum %}{{ incoming.sum }}{% else %}0{% endif %}</td>
+                    <td>{{ item.incoming_date }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{% if item.sum %}{{ item.sum }}{% else %}0{% endif %}</td>
                     <td>
-                        <a href="/b_acc/incoming/{{ incoming.id }}">
+                        <a href="{{ url_for('b_acc.view_incoming', incoming_id=item.id) }}">
                             <button type="button" class="btn btn-info">Редактировать</button>
                         </a>
-                        <a href="/b_acc/incoming/{{ incoming.id }}/del">
+                        <a href="{{ url_for('b_acc.del_incoming', incoming_id=item.id) }}">
                             <button type="button" class="btn btn-danger">Удалить</button>
                         </a>
                     </td>
@@ -37,5 +38,6 @@
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.incomings") }}
 </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Просмотр счета" %}
 {% block body %}
@@ -17,17 +18,18 @@
                 <th>Сумма</th>
             </thead>
             <tbody>
-            {% for action in actions %}
+            {% for item in pagination.items %}
                 <tr>
                     <td></td>
-                    <td>{{ action.action_type }}</td>
-                    <td>{{ action.document.name }}</td>
-                    <td>{% if action.goods %}{{ action.goods.nomenclature.internal_code }}{% endif %}</td>
-                    <td>{{ action.amount }}</td>
+                    <td>{{ item.action_type }}</td>
+                    <td>{{ item.document.name }}</td>
+                    <td>{% if item.goods %}{{ item.goods.nomenclature.internal_code }}{% endif %}</td>
+                    <td>{{ item.amount }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.view_account", {'account_id': account.id}) }}
 </div>
 {% endblock %}
