@@ -31,11 +31,12 @@ class AddItem(Form):
 def incoming():
     """
     SELECT
-    incoming.id AS incoming_id,
-    incoming.incoming_date AS incoming_incoming_date,
-    (SELECT sum(goods.incoming_price) FROM goods WHERE goods.incoming_id = incoming.id) AS sum,
-    documents.name AS documents_name
-    FROM incoming JOIN documents ON documents.id = incoming.document_id
+        incoming.id AS incoming_id,
+        incoming.incoming_date AS incoming_incoming_date,
+        (SELECT sum(goods.incoming_price) FROM goods WHERE goods.incoming_id = incoming.id) AS sum,
+        documents.name AS documents_name
+    FROM incoming
+        JOIN documents ON documents.id = incoming.document_id
     """
 
     subreq = Goods.query.with_entities(func.sum(Goods.incoming_price)).filter_by(incoming_id=Incoming.id).subquery()
@@ -68,7 +69,7 @@ def add_incoming():
     return render_template('b_acc/add_incoming.html', form=form)
 
 
-@business_accounting.route('incoming/<incoming_id>/del')
+@business_accounting.route('incoming/<int:incoming_id>/del')
 def del_incoming(incoming_id):
     incoming_model = Incoming.query.filter_by(id=incoming_id).first()
     item = Goods.query.filter_by(incoming_id=incoming_id).first()
@@ -88,7 +89,7 @@ def del_incoming(incoming_id):
     return redirect(url_for('b_acc.incoming'))
 
 
-@business_accounting.route('incoming/<incoming_id>')
+@business_accounting.route('incoming/<int:incoming_id>')
 def view_incoming(incoming_id):
     model = Incoming.query.filter_by(id=incoming_id).first()
     if model:
@@ -131,7 +132,7 @@ def view_incoming_append(incoming_id):
     return render_template('b_acc/view_incoming_append.html', form=form)
 
 
-@business_accounting.route('incoming/<incoming_id>/<item_id>/edit', methods=('POST', 'GET'))
+@business_accounting.route('incoming/<int:incoming_id>/<int:item_id>/edit', methods=('POST', 'GET'))
 def edit_incoming_item(incoming_id, item_id):
     incoming_model = Incoming.query.filter_by(id=incoming_id).first()
     item = Goods.query.filter_by(id=item_id).first()
@@ -163,7 +164,7 @@ def edit_incoming_item(incoming_id, item_id):
     return render_template('b_acc/edit_incoming_item.html', form=form)
 
 
-@business_accounting.route('incoming/<incoming_id>/<item_id>/del')
+@business_accounting.route('incoming/<int:incoming_id>/<int:item_id>/del')
 def del_incoming_item(incoming_id, item_id):
     incoming_model = Incoming.query.filter_by(id=incoming_id).first()
     item = Goods.query.filter_by(id=item_id).first()

@@ -69,5 +69,4 @@ def sale_add():
             except Exception as e:
                 flash(u'Ошибка DB: %s' % e.message, 'danger')
 
-
     return render_template('b_acc/add_sale.html', form=form)

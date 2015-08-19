@@ -21,8 +21,8 @@ class AddNomenclature(Form):
 
 @business_accounting.route('nomenclatures')
 def nomenclatures():
-    nomenclatures = Nomenclatures.query.all()
-    return render_template('b_acc/nomenclatures.html', nomenclatures=nomenclatures)
+    nomenclature_models = Nomenclatures.query.all()
+    return render_template('b_acc/nomenclatures.html', nomenclatures=nomenclature_models)
 
 
 @business_accounting.route('nomenclatures/add', methods=('POST', 'GET'))

@@ -42,7 +42,7 @@ def add_account():
     return render_template('b_acc/add_account.html', form=form)
 
 
-@business_accounting.route('accounts/<account_id>/del')
+@business_accounting.route('accounts/<int:account_id>/del')
 def del_account(account_id):
     account_model = Accounts.query.filter_by(id=account_id).first()
 
@@ -60,7 +60,7 @@ def del_account(account_id):
     return redirect(url_for('b_acc.accounts'))
 
 
-@business_accounting.route('accounts/<account_id>')
+@business_accounting.route('accounts/<int:account_id>')
 def view_account(account_id):
     account_model = Accounts.query.filter_by(id=account_id).first()
 

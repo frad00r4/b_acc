@@ -28,20 +28,16 @@
     <div class="row">
         <table class="table">
             <thead>
-                <th>Внутренний код</th>
+                <th>Аттрибут</th>
+                <th>Цена поступления</th>
                 <th>Кол-во</th>
-                <th>Операции</th>
             </thead>
             <tbody>
             {% for item in pagination.items %}
                 <tr>
-                    <td>{{ item.internal_code }} - {{ item.nom_name }}</td>
+                    <td>{{ item.attr_name }}</td>
+                    <td>{{ item.incoming_price }}</td>
                     <td>{{ item.counts }}</td>
-                    <td>
-                        <a href="/b_acc/storage/attrs/{{ item.nomenclature_id }}">
-                            <button type="button" class="btn btn-danger">Размеры</button>
-                        </a>
-                    </td>
                 </tr>
             {% endfor %}
             </tbody>
