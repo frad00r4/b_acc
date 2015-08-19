@@ -1,11 +1,12 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Номенклатуры" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/nomenclatures/add">
+            <a href="{{ url_for('b_acc.add_nomenclature') }}">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -18,15 +19,16 @@
                 <th>Дополнительная информация</th>
             </thead>
             <tbody>
-            {% for nomenclature in nomenclatures %}
+            {% for item in pagination.items %}
                 <tr>
-                    <td>{{ nomenclature.internal_code }}</td>
-                    <td>{{ nomenclature.name }}</td>
-                    <td>{{ nomenclature.ext_name }}</td>
+                    <td>{{ item.internal_code }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.ext_name }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.nomenclatures") }}
 </div>
 {% endblock %}

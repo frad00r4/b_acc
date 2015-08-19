@@ -19,10 +19,11 @@ class AddNomenclature(Form):
     submit = SubmitField(u'Отправить')
 
 
-@business_accounting.route('nomenclatures')
-def nomenclatures():
-    nomenclature_models = Nomenclatures.query.all()
-    return render_template('b_acc/nomenclatures.html', nomenclatures=nomenclature_models)
+@business_accounting.route('nomenclatures', defaults={'page': 1})
+@business_accounting.route('nomenclatures/<int:page>')
+def nomenclatures(page):
+    pagination = Nomenclatures.query.paginate(page, 10)
+    return render_template('b_acc/nomenclatures.html', pagination=pagination)
 
 
 @business_accounting.route('nomenclatures/add', methods=('POST', 'GET'))

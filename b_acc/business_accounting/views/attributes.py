@@ -17,10 +17,11 @@ class AddAttribute(Form):
     submit = SubmitField(u'Отправить')
 
 
-@business_accounting.route('attributes')
-def attributes():
-    attributes_models = Attributes.query.all()
-    return render_template('b_acc/attributes.html', attributes=attributes_models)
+@business_accounting.route('attributes', defaults={'page': 1})
+@business_accounting.route('attributes/<int:page>')
+def attributes(page):
+    pagination = Attributes.query.paginate(page, 10)
+    return render_template('b_acc/attributes.html', pagination=pagination)
 
 
 @business_accounting.route('attributes/add', methods=('POST', 'GET'))

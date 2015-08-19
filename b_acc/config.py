@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
-
 DEBUG = True
-SECRET_KEY = 'dsddfgdsdfghgfdsffgjhdghgh'
+SECRET_KEY = 'dfgghgdsfgjfdfdfhgfdfsdsaaaaaa'
 WTF_CSRF_ENABLED = True
-WTF_CSRF_SECRET_KEY = 'dfghjasrctvw5ygrtvbjrtyycvtybjcrevhvrtyujh'
+WTF_CSRF_SECRET_KEY = 'dgfghgfhgdsferfdfrt654776utrfdgtjttehtrjgfh'
 LISTEN = '0.0.0.0'
 PORT = 5000
-SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost:3306/b_acc'
+SQLALCHEMY_DATABASE_URI = 'mysql://b_acc:hnmk83q!1@ec2-52-28-60-228.eu-central-1.compute.amazonaws.com:3306/b_acc'

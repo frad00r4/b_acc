@@ -1,11 +1,12 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Аттрибуты" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/attributes/add">
+            <a href="{{ url_for('b_acc.add_attribute') }}">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -16,13 +17,14 @@
                 <th>Название</th>
             </thead>
             <tbody>
-            {% for attribute in attributes %}
+            {% for item in pagination.items %}
                 <tr>
-                    <td>{{ attribute.name }}</td>
+                    <td>{{ item.name }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.attributes") }}
 </div>
 {% endblock %}
