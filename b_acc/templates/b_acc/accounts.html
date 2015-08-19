@@ -1,11 +1,12 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Счета" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/accounts/add">
+            <a href="{{ url_for('b_acc.add_account') }}">
                 <button type="button" class="btn btn-info">Добавить</button>
             </a>
         </div>
@@ -18,15 +19,15 @@
                 <th>Операции</th>
             </thead>
             <tbody>
-            {% for account in accounts %}
+            {% for item in pagination.items %}
                 <tr>
-                    <td>{{ account.name }}</td>
-                    <td>{{ account.total }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.total }}</td>
                     <td>
-                        <a href="/b_acc/accounts/{{ account.id }}">
+                        <a href="{{ url_for('b_acc.view_account', account_id=item.id) }}">
                             <button type="button" class="btn btn-info">Просмотр</button>
                         </a>
-                        <a href="/b_acc/accounts/{{ account.id }}/del">
+                        <a href="{{ url_for('b_acc.del_account', account_id=item.id) }}">
                             <button type="button" class="btn btn-danger">Закрыть</button>
                         </a>
                     </td>
@@ -35,5 +36,6 @@
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.accounts") }}
 </div>
 {% endblock %}

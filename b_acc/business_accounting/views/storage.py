@@ -3,7 +3,7 @@
 __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
 
-from flask import render_template
+from flask import render_template, flash, redirect, url_for
 from sqlalchemy.sql.functions import func
 from ..models import Goods, Nomenclatures, Attributes
 from . import business_accounting
@@ -32,16 +32,16 @@ def storage(page):
         goods.incoming_price
     """
 
-    items = Goods.query.with_entities(Goods.nomenclature_id,
-                                      func.count().label('counts'),
-                                      Nomenclatures.internal_code,
-                                      Nomenclatures.name.label('nom_name')).\
+    pagination = Goods.query.\
+        with_entities(Goods.nomenclature_id,
+                      func.count().label('counts'),
+                      Nomenclatures.internal_code,
+                      Nomenclatures.name.label('nom_name')).\
         join(Nomenclatures).\
         join(Attributes).\
         filter(func.isnull(Goods.outgoing_date)).\
-        group_by(Goods.nomenclature_id)
+        group_by(Goods.nomenclature_id).paginate(page, 10)
 
-    pagination = items.paginate(page, 10)
     return render_template('b_acc/storage.html', pagination=pagination)
 
 
@@ -72,13 +72,19 @@ def storage_attributes(nomenclature_id, page):
         goods.incoming_price
     """
 
-    items = Goods.query.with_entities(Goods.nomenclature_id,
-                                      Goods.attribute_id,
-                                      Nomenclatures.internal_code,
-                                      Nomenclatures.name.label('nom_name'),
-                                      func.count().label('counts'),
-                                      Goods.incoming_price,
-                                      Attributes.name.label('attr_name')).\
+    nomenclature = Nomenclatures.query.filter_by(id=nomenclature_id).first()
+
+    if not nomenclature:
+        flash(u'Аттрибуты и цены: номенклатуры не существует', 'danger')
+        return redirect(url_for('b_acc.storage'))
+
+    attributes = Goods.query.with_entities(Goods.nomenclature_id,
+                                           Goods.attribute_id,
+                                           Nomenclatures.internal_code,
+                                           Nomenclatures.name.label('nom_name'),
+                                           func.count().label('counts'),
+                                           Goods.incoming_price,
+                                           Attributes.name.label('attr_name')).\
         join(Nomenclatures).\
         join(Attributes).\
         filter(func.isnull(Goods.outgoing_date),
@@ -89,6 +95,6 @@ def storage_attributes(nomenclature_id, page):
         order_by(Goods.attribute_id,
                  Goods.incoming_price)
 
-    pagination = items.paginate(page, 10)
+    pagination = attributes.paginate(page, 10)
 
-    return render_template('b_acc/storage_attributes.html', pagination=pagination)
+    return render_template('b_acc/storage_attributes.html', nomenclature=nomenclature, pagination=pagination)

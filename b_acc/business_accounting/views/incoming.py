@@ -27,8 +27,9 @@ class AddItem(Form):
     submit = SubmitField(u'Отправить')
 
 
-@business_accounting.route('incoming')
-def incoming():
+@business_accounting.route('incomings', defaults={'page': 1})
+@business_accounting.route('incomings/<int:page>')
+def incomings(page):
     """
     SELECT
         incoming.id AS incoming_id,
@@ -40,12 +41,12 @@ def incoming():
     """
 
     subreq = Goods.query.with_entities(func.sum(Goods.incoming_price)).filter_by(incoming_id=Incoming.id).subquery()
-    models = Incoming.query.with_entities(Incoming.id,
-                                          Incoming.incoming_date,
-                                          subreq.as_scalar().label('sum'),
-                                          Documents.name).join(Documents).all()
+    pagination = Incoming.query.with_entities(Incoming.id,
+                                              Incoming.incoming_date,
+                                              subreq.as_scalar().label('sum'),
+                                              Documents.name).join(Documents).paginate(page, 10)
 
-    return render_template('b_acc/incoming.html', data=models)
+    return render_template('b_acc/incomings.html', pagination=pagination)
 
 
 @business_accounting.route('incoming/add', methods=('POST', 'GET'))
@@ -62,7 +63,7 @@ def add_incoming():
         try:
             connection.session.commit()
             flash(u'Поставка товара добавлена', 'success')
-            return redirect(url_for('b_acc.incoming'))
+            return redirect(url_for('b_acc.incomings'))
         except Exception as e:
             flash(u'Ошибка DB: %s' % e.message, 'danger')
 
@@ -86,18 +87,19 @@ def del_incoming(incoming_id):
         except Exception as e:
             flash(u'Ошибка DB: %s' % e.message, 'danger')
 
-    return redirect(url_for('b_acc.incoming'))
+    return redirect(url_for('b_acc.incomings'))
 
 
-@business_accounting.route('incoming/<int:incoming_id>')
-def view_incoming(incoming_id):
+@business_accounting.route('incoming/<int:incoming_id>', defaults={'page': 1})
+@business_accounting.route('incoming/<int:incoming_id>/<int:page>')
+def view_incoming(incoming_id, page):
     model = Incoming.query.filter_by(id=incoming_id).first()
     if model:
-        goods = Goods.query.filter_by(incoming_id=incoming_id).all()
-        return render_template('b_acc/view_incoming.html', incoming=model, items=goods)
+        pagination = Goods.query.filter_by(incoming_id=incoming_id).paginate(page, 10)
+        return render_template('b_acc/view_incoming.html', incoming=model, pagination=pagination)
     else:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
-        return redirect(url_for('b_acc.incoming'))
+        return redirect(url_for('b_acc.incomings'))
 
 
 @business_accounting.route('incoming/<incoming_id>/add', methods=('POST', 'GET'))
@@ -106,7 +108,7 @@ def view_incoming_append(incoming_id):
 
     if not incoming_model:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
-        return redirect(url_for('b_acc.incoming'))
+        return redirect(url_for('b_acc.incomings'))
 
     form = AddItem()
     form.nomenclature_id.choices = [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
@@ -139,11 +141,11 @@ def edit_incoming_item(incoming_id, item_id):
 
     if not incoming_model:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
-        return redirect(url_for('b_acc.incoming'))
+        return redirect(url_for('b_acc.incomings'))
 
     if not item:
         flash(u'Вещи: %s не существует' % item_id, 'danger')
-        return redirect(url_for('b_acc.incoming', incoming_id=incoming_model.id))
+        return redirect(url_for('b_acc.incomings', incoming_id=incoming_model.id))
 
     form = AddItem(obj=item)
     form.nomenclature_id.choices = [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
@@ -171,11 +173,11 @@ def del_incoming_item(incoming_id, item_id):
 
     if not incoming_model:
         flash(u'Поступления: %s не существует' % incoming_id, 'danger')
-        return redirect(url_for('b_acc.incoming'))
+        return redirect(url_for('b_acc.incomings'))
 
     if not item:
         flash(u'Вещи: %s не существует' % item_id, 'danger')
-        return redirect(url_for('b_acc.incoming', incoming_id=incoming_model.id))
+        return redirect(url_for('b_acc.incomings', incoming_id=incoming_model.id))
 
     connection.session.delete(item)
     try:
