@@ -1,4 +1,4 @@
-*.b_acc/config.py
+.*b_acc/config.py
 ^.idea
 *.pyc$
 ^ve
