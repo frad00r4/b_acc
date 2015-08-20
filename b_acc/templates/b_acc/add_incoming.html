@@ -16,21 +16,13 @@
                         </span>
                     </div>
                 </div>
-                <script type="text/javascript">
-                    $(function () {
-                        $('#datetimepicker2').datetimepicker({
-                            locale: 'ru',
-                            format: 'YYYY-MM-DD HH:mm:ss'
-                        });
-                    });
-                </script>
                 {{ form.document_id.label }}
                 <div class="form-group">
-                    {{ form.document_id(class="form-control") }}
+                    {{ form.document_id(class="form-control select2") }}
                 </div>
                 {{ form.account_id.label }}
                 <div class="form-group">
-                    {{ form.account_id(class="form-control") }}
+                    {{ form.account_id(class="form-control select2") }}
                 </div>
                 {{ form.submit(class="btn btn-default") }}
             </form>
