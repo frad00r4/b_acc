@@ -9,7 +9,7 @@ from wtforms import SubmitField, DateTimeField, SelectField, IntegerField
 from wtforms.validators import DataRequired
 from sqlalchemy.sql.functions import func
 from ...exts import connection
-from ..models import Incoming, Documents, Goods, Nomenclatures, Attributes, Accounts
+from ..models import Incoming, Documents, Goods, Nomenclatures, Attributes, Accounts, AccountActions
 from . import business_accounting
 
 
@@ -43,6 +43,7 @@ def incomings(page):
     subreq = Goods.query.with_entities(func.sum(Goods.incoming_price)).filter_by(incoming_id=Incoming.id).subquery()
     pagination = Incoming.query.with_entities(Incoming.id,
                                               Incoming.incoming_date,
+                                              Incoming.paid,
                                               subreq.as_scalar().label('sum'),
                                               Documents.name).join(Documents).paginate(page, 10)
 
@@ -58,7 +59,8 @@ def add_incoming():
     if request.method == 'POST' and form.validate():
         incoming_obj = Incoming(incoming_date=form.incoming_date.data,
                                 document_id=form.document_id.data,
-                                account_id=form.account_id.data)
+                                account_id=form.account_id.data,
+                                paid=False)
         connection.session.add(incoming_obj)
         try:
             connection.session.commit()
@@ -72,11 +74,11 @@ def add_incoming():
 
 @business_accounting.route('incoming/<int:incoming_id>/del')
 def del_incoming(incoming_id):
-    incoming_model = Incoming.query.filter_by(id=incoming_id).first()
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
     item = Goods.query.filter_by(incoming_id=incoming_id).first()
 
     if not incoming_model:
-        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
     elif item:
         flash(u'Поступление: %s от %s не пустое' % (incoming_model.id, incoming_model.incoming_date), 'danger')
     else:
@@ -104,10 +106,10 @@ def view_incoming(incoming_id, page):
 
 @business_accounting.route('incoming/<incoming_id>/add', methods=('POST', 'GET'))
 def view_incoming_append(incoming_id):
-    incoming_model = Incoming.query.filter_by(id=incoming_id).first()
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
 
     if not incoming_model:
-        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incomings'))
 
     form = AddItem()
@@ -122,7 +124,8 @@ def view_incoming_append(incoming_id):
                      incoming_date=incoming_model.incoming_date,
                      outgoing_date=None,
                      incoming_price=form.incoming_price.data,
-                     outgoing_price=None)
+                     outgoing_price=None,
+                     paid=False)
         connection.session.add(item)
         try:
             connection.session.commit()
@@ -136,11 +139,11 @@ def view_incoming_append(incoming_id):
 
 @business_accounting.route('incoming/<int:incoming_id>/<int:item_id>/edit', methods=('POST', 'GET'))
 def edit_incoming_item(incoming_id, item_id):
-    incoming_model = Incoming.query.filter_by(id=incoming_id).first()
-    item = Goods.query.filter_by(id=item_id).first()
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
+    item = Goods.query.filter_by(id=item_id, paid=False).first()
 
     if not incoming_model:
-        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incomings'))
 
     if not item:
@@ -168,11 +171,11 @@ def edit_incoming_item(incoming_id, item_id):
 
 @business_accounting.route('incoming/<int:incoming_id>/<int:item_id>/del')
 def del_incoming_item(incoming_id, item_id):
-    incoming_model = Incoming.query.filter_by(id=incoming_id).first()
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
     item = Goods.query.filter_by(id=item_id).first()
 
     if not incoming_model:
-        flash(u'Поступления: %s не существует' % incoming_id, 'danger')
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
         return redirect(url_for('b_acc.incomings'))
 
     if not item:
@@ -187,3 +190,36 @@ def del_incoming_item(incoming_id, item_id):
         flash(u'Ошибка DB: %s' % e.message, 'danger')
 
     return redirect(url_for('b_acc.view_incoming', incoming_id=incoming_model.id))
+
+
+@business_accounting.route('incoming/<int:incoming_id>/pay')
+def pay_incoming(incoming_id):
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
+
+    if not incoming_model:
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
+    else:
+        incoming_model.paid = True
+
+        Goods.query.filter_by(incoming_id=incoming_id).update({'paid': 1})
+
+        print Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
+            filter_by(incoming_id=incoming_id)
+
+        sum = Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
+            filter_by(incoming_id=incoming_id).first()
+        action = AccountActions(account_id=incoming_model.account_id,
+                                document_id=incoming_model.document_id,
+                                action_type='outgoing',
+                                amount=sum.sum,
+                                datetime=incoming_model.incoming_date)
+        connection.session.add(action)
+
+        try:
+            connection.session.commit()
+            flash(u'Поступление оплачено', 'success')
+        except Exception as e:
+            connection.session.rollback()
+            flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return redirect(url_for('b_acc.incomings'))

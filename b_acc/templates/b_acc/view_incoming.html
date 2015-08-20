@@ -9,6 +9,7 @@
         <br/>
         <br/>
     </div>
+    {% if not incoming.paid %}
     <div class="row">
         <div class="col-md-2">
             <a href="{{ url_for('b_acc.view_incoming_append', incoming_id=incoming.id) }}">
@@ -16,13 +17,16 @@
             </a>
         </div>
     </div>
+    {% endif %}
     <div class="row">
         <table class="table">
             <thead>
                 <th>ID номенклатуры</th>
                 <th>Атрибут</th>
                 <th>Цена закупки</th>
+                {% if not incoming.paid %}
                 <th>Операции</th>
+                {% endif %}
             </thead>
             <tbody>
             {% for item in pagination.items %}
@@ -30,6 +34,7 @@
                     <td>{{ item.nomenclature.internal_code }}</td>
                     <td>{{ item.attribute.name }}</td>
                     <td>{{ item.incoming_price }}</td>
+                    {% if not incoming.paid %}
                     <td>
                         <a href="{{ url_for('b_acc.edit_incoming_item', incoming_id=incoming.id, item_id=item.id) }}">
                             <button type="button" class="btn btn-info">Редактировать</button>
@@ -38,6 +43,7 @@
                             <button type="button" class="btn btn-danger">Удалить</button>
                         </a>
                     </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>

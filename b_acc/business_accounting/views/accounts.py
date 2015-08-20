@@ -7,6 +7,7 @@ from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
 from wtforms import SubmitField, StringField
 from wtforms.validators import DataRequired
+from sqlalchemy.sql.functions import func
 from ..models import Accounts, AccountActions
 from ...exts import connection
 from . import business_accounting
@@ -20,6 +21,9 @@ class AddAccount(Form):
 @business_accounting.route('accounts', defaults={'page': 1})
 @business_accounting.route('accounts/<int:page>')
 def accounts(page):
+    subreq_incoming = AccountActions.query.with_entities(func.sum(AccountActions.action_type).label('sum')).filter_by(action_type='incoming').cte()
+    subreq_outgoing = AccountActions.query.with_entities(func.sum(AccountActions.action_type * -1).label('sum')).filter_by(action_type='outgoing').cte()
+    connection.session.query()
     pagination = Accounts.query.filter_by(actived=1).paginate(page, 10)
     return render_template('b_acc/accounts.html', pagination=pagination)
 

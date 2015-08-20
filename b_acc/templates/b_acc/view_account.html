@@ -20,7 +20,7 @@
             <tbody>
             {% for item in pagination.items %}
                 <tr>
-                    <td></td>
+                    <td>{{ item.datetime }}</td>
                     <td>{{ item.action_type }}</td>
                     <td>{{ item.document.name }}</td>
                     <td>{% if item.goods %}{{ item.goods.nomenclature.internal_code }}{% endif %}</td>

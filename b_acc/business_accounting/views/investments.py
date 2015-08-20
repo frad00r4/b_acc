@@ -5,7 +5,7 @@ __email__ = 'frad00r4@gmail.com'
 
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
-from wtforms import SubmitField, SelectField, IntegerField
+from wtforms import SubmitField, SelectField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired
 from ..models import AccountActions, Documents, Accounts
 from ...exts import connection
@@ -13,6 +13,7 @@ from . import business_accounting
 
 
 class AddInvestments(Form):
+    datetime = DateTimeField(u'Дата прихода', validators=[DataRequired()])
     account_id = SelectField(u'Счет', validators=[DataRequired()], choices=[], coerce=int)
     document_id = SelectField(u'Документ', validators=[DataRequired()], choices=[], coerce=int)
     amount = IntegerField(u'Сумма прихода', validators=[DataRequired()])
@@ -34,10 +35,9 @@ def investments():
             investment = AccountActions(account_id=form.account_id.data,
                                         document_id=form.document_id.data,
                                         action_type='incoming',
-                                        amount=form.amount.data)
+                                        amount=form.amount.data,
+                                        datetime=form.datetime.data)
             connection.session.add(investment)
-
-            account.total += form.amount.data
 
             try:
                 connection.session.commit()

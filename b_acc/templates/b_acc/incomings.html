@@ -27,11 +27,16 @@
                     <td>{% if item.sum %}{{ item.sum }}{% else %}0{% endif %}</td>
                     <td>
                         <a href="{{ url_for('b_acc.view_incoming', incoming_id=item.id) }}">
-                            <button type="button" class="btn btn-info">Редактировать</button>
+                            <button type="button" class="btn btn-info">Просмотр</button>
+                        </a>
+                        {% if not item.paid %}
+                        <a href="{{ url_for('b_acc.pay_incoming', incoming_id=item.id) }}">
+                            <button type="button" class="btn btn-info">Оплатить</button>
                         </a>
                         <a href="{{ url_for('b_acc.del_incoming', incoming_id=item.id) }}">
-                            <button type="button" class="btn btn-danger">Удалить</button>
+                            <button type="button" class="btn btn-info">Удалить</button>
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
