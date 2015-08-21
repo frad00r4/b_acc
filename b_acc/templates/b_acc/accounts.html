@@ -22,7 +22,7 @@
             {% for item in pagination.items %}
                 <tr>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.total }}</td>
+                    <td>{% if item.amount %}{{ item.amount }}{% else %}0{% endif %}</td>
                     <td>
                         <a href="{{ url_for('b_acc.view_account', account_id=item.id) }}">
                             <button type="button" class="btn btn-info">Просмотр</button>

@@ -8,6 +8,7 @@ from flask_wtf import Form
 from wtforms import SubmitField, StringField
 from wtforms.validators import DataRequired
 from sqlalchemy.sql.functions import func
+from sqlalchemy.orm import aliased
 from ..models import Accounts, AccountActions
 from ...exts import connection
 from . import business_accounting
@@ -21,10 +22,57 @@ class AddAccount(Form):
 @business_accounting.route('accounts', defaults={'page': 1})
 @business_accounting.route('accounts/<int:page>')
 def accounts(page):
-    subreq_incoming = AccountActions.query.with_entities(func.sum(AccountActions.action_type).label('sum')).filter_by(action_type='incoming').cte()
-    subreq_outgoing = AccountActions.query.with_entities(func.sum(AccountActions.action_type * -1).label('sum')).filter_by(action_type='outgoing').cte()
-    connection.session.query()
-    pagination = Accounts.query.filter_by(actived=1).paginate(page, 10)
+    """
+    SELECT
+        accounts.id AS accounts_id,
+        accounts.name AS accounts_name,
+        SUM(anon_1.amount) AS amount
+    FROM
+        accounts
+            LEFT OUTER JOIN
+        (SELECT
+            anon_2.account_id AS account_id, anon_2.amount AS amount
+        FROM
+            (SELECT
+            account_actions.account_id AS account_id,
+                account_actions.amount AS amount
+        FROM
+            account_actions
+        WHERE
+            account_actions.action_type = 'incoming' UNION ALL SELECT
+            account_actions.account_id AS account_id,
+                account_actions.amount * - 1 AS anon_3
+        FROM
+            account_actions
+        WHERE
+            account_actions.action_type = 'outgoing') AS anon_2) AS anon_1 ON accounts.id = anon_1.account_id
+    WHERE
+        accounts.actived = 1
+    GROUP BY accounts.id
+    """
+
+    subreq_out = AccountActions.query.\
+        with_entities(AccountActions.account_id.label('account_id'),
+                      (AccountActions.amount.label('amount') * -1)).\
+        filter_by(action_type='outgoing')
+
+    total = AccountActions.query.\
+        with_entities(AccountActions.account_id.label('account_id'),
+                      AccountActions.amount.label('amount')).\
+        filter_by(action_type='incoming').\
+        union_all(subreq_out).\
+        subquery(name='total')
+
+    subreq = aliased(total)
+
+    accounts_req = Accounts.query.\
+        with_entities(Accounts.id,
+                      Accounts.name,
+                      func.sum(subreq.c.amount).label('amount')).filter_by(actived=1).\
+        outerjoin(subreq).\
+        group_by(Accounts.id)
+
+    pagination = accounts_req.paginate(page, 10)
     return render_template('b_acc/accounts.html', pagination=pagination)
 
 
