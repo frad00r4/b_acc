@@ -54,7 +54,8 @@ def sale_add():
                                     document_id=form.document_id.data,
                                     goods_id=item.id,
                                     action_type='incoming',
-                                    amount=form.outgoing_price.data)
+                                    amount=form.outgoing_price.data,
+                                    datetime=form.outgoing_date.data)
             connection.session.add(action)
 
             item.outgoing_price = form.outgoing_price.data

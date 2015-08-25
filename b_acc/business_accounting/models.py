@@ -32,6 +32,7 @@ class Incoming(connection.Model):
     account_id = connection.Column(connection.Integer, connection.ForeignKey('accounts.id'), nullable=False)
     paid = connection.Column(connection.Boolean, nullable=False, default=1)
     goods = connection.relationship('Goods', backref='incoming', lazy='dynamic')
+    actions = connection.relationship('AccountActions', backref='incoming', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -87,6 +88,7 @@ class AccountActions(connection.Model):
     account_id = connection.Column(connection.Integer, connection.ForeignKey('accounts.id'), nullable=False)
     document_id = connection.Column(connection.Integer, connection.ForeignKey('documents.id'), nullable=False)
     goods_id = connection.Column(connection.Integer, connection.ForeignKey('goods.id'), nullable=True)
+    incoming_id = connection.Column(connection.Integer, connection.ForeignKey('incoming.id'), nullable=True)
     action_type = connection.Column(connection.Enum('incoming', 'outgoing'), nullable=False)
     amount = connection.Column(connection.Integer, nullable=False)
     datetime = connection.Column(connection.DateTime, nullable=False)

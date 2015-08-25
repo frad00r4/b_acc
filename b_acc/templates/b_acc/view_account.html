@@ -1,7 +1,8 @@
 {% extends "layouts/main.html" %}
 {% import 'macros/pagination.html' as macros %}
 
-{% set  title = "Просмотр счета" %}
+{% set title = "Просмотр счета" %}
+{% set actions = { 'incoming': 'Поступления', 'outgoing': 'Расходы' } %}
 {% block body %}
 <div class="base-template">
     <div class="row">
@@ -14,16 +15,17 @@
                 <th>Дата операции</th>
                 <th>Действие</th>
                 <th>Документ</th>
-                <th>Товар</th>
+                <th>Товар/Поступление</th>
                 <th>Сумма</th>
             </thead>
             <tbody>
             {% for item in pagination.items %}
                 <tr>
                     <td>{{ item.datetime }}</td>
-                    <td>{{ item.action_type }}</td>
+                    <td>{{ actions[item.action_type] }}</td>
                     <td>{{ item.document.name }}</td>
-                    <td>{% if item.goods %}{{ item.goods.nomenclature.internal_code }}{% endif %}</td>
+                    <td>{% if item.goods %}Продажа {{ item.goods.nomenclature.internal_code }} - {{ item.goods.nomenclature.name }}
+                        {% elif item.incoming %}Поступление от {{ item.incoming.incoming_date }}{%else%}-{% endif %}</td>
                     <td>{{ item.amount }}</td>
                 </tr>
             {% endfor %}

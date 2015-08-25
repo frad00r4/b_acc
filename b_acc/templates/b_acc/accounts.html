@@ -27,9 +27,11 @@
                         <a href="{{ url_for('b_acc.view_account', account_id=item.id) }}">
                             <button type="button" class="btn btn-info">Просмотр</button>
                         </a>
+                        {% if item.actived %}
                         <a href="{{ url_for('b_acc.del_account', account_id=item.id) }}">
                             <button type="button" class="btn btn-danger">Закрыть</button>
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

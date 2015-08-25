@@ -26,6 +26,7 @@ def accounts(page):
     SELECT
         accounts.id AS accounts_id,
         accounts.name AS accounts_name,
+        accounts.actived AS accounts_actived,
         SUM(anon_1.amount) AS amount
     FROM
         accounts
@@ -46,8 +47,6 @@ def accounts(page):
             account_actions
         WHERE
             account_actions.action_type = 'outgoing') AS anon_2) AS anon_1 ON accounts.id = anon_1.account_id
-    WHERE
-        accounts.actived = 1
     GROUP BY accounts.id
     """
 
@@ -68,7 +67,8 @@ def accounts(page):
     accounts_req = Accounts.query.\
         with_entities(Accounts.id,
                       Accounts.name,
-                      func.sum(subreq.c.amount).label('amount')).filter_by(actived=1).\
+                      Accounts.actived,
+                      func.sum(subreq.c.amount).label('amount')).\
         outerjoin(subreq).\
         group_by(Accounts.id)
 
@@ -97,10 +97,10 @@ def add_account():
 
 @business_accounting.route('account/<int:account_id>/del')
 def del_account(account_id):
-    account_model = Accounts.query.filter_by(id=account_id).first()
+    account_model = Accounts.query.filter_by(id=account_id, actived=1).first()
 
     if not account_model:
-        flash(u'Счет: %s не существует' % account_id, 'danger')
+        flash(u'Счет: %s не существует или уже закрыт' % account_id, 'danger')
     else:
         account_model.actived = 0
 

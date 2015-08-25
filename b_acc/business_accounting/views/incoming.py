@@ -203,16 +203,14 @@ def pay_incoming(incoming_id):
 
         Goods.query.filter_by(incoming_id=incoming_id).update({'paid': 1})
 
-        print Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
-            filter_by(incoming_id=incoming_id)
-
         sum = Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
             filter_by(incoming_id=incoming_id).first()
         action = AccountActions(account_id=incoming_model.account_id,
                                 document_id=incoming_model.document_id,
                                 action_type='outgoing',
                                 amount=sum.sum,
-                                datetime=incoming_model.incoming_date)
+                                datetime=incoming_model.incoming_date,
+                                incoming_id=incoming_model.id)
         connection.session.add(action)
 
         try:
