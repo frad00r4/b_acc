@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-md-2">
             <a href="{{ url_for('b_acc.view_incoming_append', incoming_id=incoming.id) }}">
-                <button type="button" class="btn btn-info">Добавить</button>
+                <button type="button" class="btn btn-info" tabindex="1">Добавить</button>
             </a>
         </div>
     </div>
@@ -21,7 +21,7 @@
     <div class="row">
         <table class="table">
             <thead>
-                <th>ID номенклатуры</th>
+                <th>Номенклатура</th>
                 <th>Атрибут</th>
                 <th>Цена закупки</th>
                 {% if not incoming.paid %}
@@ -31,7 +31,7 @@
             <tbody>
             {% for item in pagination.items %}
                 <tr>
-                    <td>{{ item.nomenclature.internal_code }}</td>
+                    <td>{{ item.nomenclature.internal_code }} - {{ item.nomenclature.name }}</td>
                     <td>{{ item.attribute.name }}</td>
                     <td>{{ item.incoming_price }}</td>
                     {% if not incoming.paid %}
