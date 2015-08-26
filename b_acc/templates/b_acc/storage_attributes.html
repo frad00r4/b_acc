@@ -4,6 +4,7 @@
 {% set  title = "Склад" %}
 {% block body %}
 <div class="base-template">
+    {{ macros.render_pagination(pagination, "b_acc.storage_attributes", {'nomenclature_id': nomenclature.id}) }}
     <div class="row">
         <table class="table">
             <thead>

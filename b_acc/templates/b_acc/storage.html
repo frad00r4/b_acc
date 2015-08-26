@@ -4,6 +4,7 @@
 {% set  title = "Склад" %}
 {% block body %}
 <div class="base-template">
+    {{ macros.render_pagination(pagination, "b_acc.storage") }}
     <div class="row">
         <table class="table">
             <thead>

@@ -116,7 +116,58 @@ def del_account(account_id):
 @business_accounting.route('account/<int:account_id>', defaults={'page': 1})
 @business_accounting.route('account/<int:account_id>/<int:page>')
 def view_account(account_id, page):
-    account_model = Accounts.query.filter_by(id=account_id).first()
+    """
+    SELECT
+        accounts.id AS accounts_id,
+        accounts.name AS accounts_name,
+        accounts.actived AS accounts_actived,
+        SUM(anon_1.amount) AS amount
+    FROM
+        accounts
+            LEFT OUTER JOIN
+        (SELECT
+            anon_2.account_id AS account_id, anon_2.amount AS amount
+        FROM
+            (SELECT
+            account_actions.account_id AS account_id,
+                account_actions.amount AS amount
+        FROM
+            account_actions
+        WHERE
+            account_actions.action_type = 'incoming' UNION ALL SELECT
+            account_actions.account_id AS account_id,
+                account_actions.amount * - 1 AS anon_3
+        FROM
+            account_actions
+        WHERE
+            account_actions.action_type = 'outgoing') AS anon_2) AS anon_1 ON accounts.id = anon_1.account_id
+    WHERE
+        accounts.id = <account_id>
+    GROUP BY accounts.id
+    """
+
+    subreq_out = AccountActions.query.\
+        with_entities(AccountActions.account_id.label('account_id'),
+                      (AccountActions.amount.label('amount') * -1)).\
+        filter_by(action_type='outgoing')
+
+    total = AccountActions.query.\
+        with_entities(AccountActions.account_id.label('account_id'),
+                      AccountActions.amount.label('amount')).\
+        filter_by(action_type='incoming').\
+        union_all(subreq_out).\
+        subquery(name='total')
+
+    subreq = aliased(total)
+
+    account_model = Accounts.query.\
+        filter_by(id=account_id).\
+        with_entities(Accounts.id.label('account_id'),
+                      Accounts.name,
+                      Accounts.actived,
+                      func.sum(subreq.c.amount).label('amount')).\
+        outerjoin(subreq).\
+        group_by(Accounts.id).first()
     if not account_model:
         flash(u'Счет: %s не существует' % account_id, 'danger')
         return redirect(url_for('b_acc.accounts'))

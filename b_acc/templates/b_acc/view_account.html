@@ -8,7 +8,9 @@
     <div class="row">
         {% if account.actived == 0 %}<h1 class="text-danger">СЧЕТ ЗАКРЫТ</h1>{% endif %}
         <h3>Движения денежных средств по счету <span class="text-success">{{ account.name }}</span></h3>
+        <h3>состояние счету: <span class="{% if account.amount > 0 %}text-success{% else %}text-danger{% endif %}">{{account.amount}}</span></h3>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.view_account", {'account_id': account.account_id}) }}
     <div class="row">
         <table class="table">
             <thead>
@@ -32,6 +34,6 @@
             </tbody>
         </table>
     </div>
-    {{ macros.render_pagination(pagination, "b_acc.view_account", {'account_id': account.id}) }}
+    {{ macros.render_pagination(pagination, "b_acc.view_account", {'account_id': account.account_id}) }}
 </div>
 {% endblock %}

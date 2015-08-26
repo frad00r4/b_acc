@@ -5,12 +5,18 @@ __email__ = 'frad00r4@gmail.com'
 
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
+from flask_wtf.file import FileField
 from wtforms import SubmitField, DateTimeField, SelectField, IntegerField
 from wtforms.validators import DataRequired
 from sqlalchemy.sql.functions import func
 from ...exts import connection
 from ..models import Incoming, Documents, Goods, Nomenclatures, Attributes, Accounts, AccountActions
 from . import business_accounting
+import csv
+
+
+class BadFile(Exception):
+    pass
 
 
 class AddIncoming(Form):
@@ -24,6 +30,11 @@ class AddItem(Form):
     nomenclature_id = SelectField(u'Номенклатура', validators=[DataRequired()], choices=[], coerce=int)
     attribute_id = SelectField(u'Аттрибут', validators=[DataRequired()], choices=[], coerce=int)
     incoming_price = IntegerField(u'Цена прихода', validators=[DataRequired()])
+    submit = SubmitField(u'Отправить')
+
+
+class LoadIncoming(Form):
+    csv_file = FileField(u'CSV файл', validators=[DataRequired()])
     submit = SubmitField(u'Отправить')
 
 
@@ -203,12 +214,12 @@ def pay_incoming(incoming_id):
 
         Goods.query.filter_by(incoming_id=incoming_id).update({'paid': 1})
 
-        sum = Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
+        total = Goods.query.with_entities(func.sum(Goods.incoming_price).label('sum')).\
             filter_by(incoming_id=incoming_id).first()
         action = AccountActions(account_id=incoming_model.account_id,
                                 document_id=incoming_model.document_id,
                                 action_type='outgoing',
-                                amount=sum.sum,
+                                amount=total.sum,
                                 datetime=incoming_model.incoming_date,
                                 incoming_id=incoming_model.id)
         connection.session.add(action)
@@ -221,3 +232,59 @@ def pay_incoming(incoming_id):
             flash(u'Ошибка DB: %s' % e.message, 'danger')
 
     return redirect(url_for('b_acc.incomings'))
+
+
+@business_accounting.route('incoming/<int:incoming_id>/load', methods=('POST', 'GET'))
+def load_incoming(incoming_id):
+    incoming_model = Incoming.query.filter_by(id=incoming_id, paid=False).first()
+
+    if not incoming_model:
+        flash(u'Поступления: %s не существует или уже оплачено' % incoming_id, 'danger')
+        return redirect(url_for('b_acc.incomings'))
+
+    form = LoadIncoming()
+
+    if request.method == 'POST' and form.validate():
+        try:
+            csv_reader = csv.reader(form.csv_file.data.stream, delimiter=';')
+            nomenclatures = dict()
+            attributes = dict()
+            for row in csv_reader:
+                attrs = row[2].split(',')
+                if len(attrs) != int(row[1]):
+                    raise BadFile
+
+                if row[0] not in nomenclatures:
+                    nomenclature = Nomenclatures.query.filter_by(internal_code=int(row[0])).first()
+                    if not nomenclature:
+                        raise BadFile
+                    nomenclatures.update({row[0]: nomenclature.id})
+
+                for attr in attrs:
+                    if row[0] not in attributes:
+                        attribute = Attributes.query.filter_by(id=int(attr)).first()
+                        if not attribute:
+                            raise BadFile
+                        attributes.update({attr: attribute.id})
+
+                    item = Goods(nomenclature_id=nomenclatures[row[0]],
+                                 attribute_id=attributes[attr],
+                                 incoming_id=incoming_model.id,
+                                 incoming_date=incoming_model.incoming_date,
+                                 outgoing_date=None,
+                                 incoming_price=int(row[3]),
+                                 outgoing_price=None,
+                                 paid=False)
+                    connection.session.add(item)
+
+            try:
+                connection.session.commit()
+                flash(u'Поставка товара добавлена', 'success')
+                return redirect(url_for('b_acc.view_incoming', incoming_id=incoming_model.id))
+            except Exception as e:
+                flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+        except BadFile:
+            flash(u'Ошибка в CSV', 'danger')
+
+    return render_template('b_acc/load_incoming.html', form=form)

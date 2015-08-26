@@ -1,0 +1,19 @@
+{% extends "layouts/main.html" %}
+
+{% set title = "Поставка товара - загрузка файлом" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                {{ form.csv_file.label }}
+                <div class="form-group">
+                    {{ form.csv_file(class="form-control", tabindex=1) }}
+                </div>
+                {{ form.submit(class="btn btn-default", tabindex=2) }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

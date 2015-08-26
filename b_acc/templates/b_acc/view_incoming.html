@@ -18,6 +18,7 @@
         </div>
     </div>
     {% endif %}
+    {{ macros.render_pagination(pagination, "b_acc.view_incoming", {'incoming_id': incoming.id}) }}
     <div class="row">
         <table class="table">
             <thead>
