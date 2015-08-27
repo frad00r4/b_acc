@@ -5,4 +5,9 @@ $( document ).ready(function(){
         locale: 'ru',
         format: 'YYYY-MM-DD HH:mm:ss'
     });
+
+    $('.datetimepicker1').datetimepicker({
+        locale: 'ru',
+        format: 'YYYY-MM-DD'
+    });
 })

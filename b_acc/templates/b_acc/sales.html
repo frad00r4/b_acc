@@ -1,4 +1,5 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Продажи" %}
 {% block body %}
@@ -10,6 +11,41 @@
             </a>
         </div>
     </div>
+    <br/>
+    <div class="row">
+        <fieldset>
+        <legend>Фильтр</legend>
+        <form method="GET">
+            <div class="col-md-2">
+                {{ form.from_date.label }}
+                <div class='input-group date datetimepicker1'>
+                    {{ form.from_date(class="form-control") }}
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.to_date.label }}
+                <div class='input-group date datetimepicker1'>
+                    {{ form.to_date(class="form-control") }}
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2" style="top: 25px">
+                {{ form.submit(class="btn btn-default") }}
+            </div>
+        </form>
+        </fieldset>
+    </div>
+    {% if sum %}
+    <div class="row">
+        <h2> Продажи на сумму: {{ sum }}</h2>
+    </div>
+    {% endif %}
+    {{ macros.render_pagination(pagination, "b_acc.sales") }}
     <div class="row">
         <table class="table">
             <thead>
@@ -20,17 +56,18 @@
                 <th>Выгода</th>
             </thead>
             <tbody>
-            {% for sale in sales %}
+            {% for item in pagination.items %}
                 <tr>
-                    <td>{{ sale.outgoing_date }}</td>
-                    <td>{{ sale.nomenclature.internal_code }} - {{ sale.nomenclature.name }}</td>
-                    <td>{{ sale.attribute.name }}</td>
-                    <td>{{ sale.outgoing_price }}</td>
-                    <td>{{ sale.outgoing_price - sale.incoming_price }}</td>
+                    <td>{{ item.outgoing_date }}</td>
+                    <td>{{ item.nomenclature.internal_code }} - {{ item.nomenclature.name }}</td>
+                    <td>{{ item.attribute.name }}</td>
+                    <td>{{ item.outgoing_price }}</td>
+                    <td>{{ item.outgoing_price - item.incoming_price }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.sales") }}
 </div>
 {% endblock %}

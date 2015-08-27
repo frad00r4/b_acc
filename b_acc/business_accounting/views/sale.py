@@ -4,12 +4,15 @@ __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
 
 from flask import render_template, request, flash, redirect, url_for
-from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, AccountActions
+from sqlalchemy.sql.functions import func
 from flask_wtf import Form
-from wtforms import SubmitField, DateTimeField, SelectField, IntegerField
+from wtforms import SubmitField, DateTimeField, SelectField, IntegerField, DateField
 from wtforms.validators import DataRequired
+from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, AccountActions
 from ...exts import connection
 from . import business_accounting
+from werkzeug.datastructures import MultiDict
+from datetime import  datetime
 
 
 class AddSale(Form):
@@ -22,10 +25,40 @@ class AddSale(Form):
     submit = SubmitField(u'Отправить')
 
 
-@business_accounting.route('sales')
-def sales():
-    models = Goods.query.filter(Goods.outgoing_price != None, Goods.outgoing_date != None).all()
-    return render_template('b_acc/sales.html', sales=models)
+class SalesFilter(Form):
+    from_date = DateField(u'От')
+    to_date = DateField(u'До')
+    submit = SubmitField(u'Фильтровать')
+
+
+@business_accounting.route('sales', defaults={'page': 1})
+@business_accounting.route('sales/<int:page>')
+def sales(page):
+    data = dict()
+    if request.args.get('to_date', None):
+        data.update(to_date=request.args.get('to_date', None))
+    if request.args.get('from_date', None):
+        data.update(from_date=request.args.get('from_date', None))
+    form = SalesFilter(formdata=MultiDict(data))
+
+    req = Goods.query.filter(Goods.outgoing_price != None, Goods.outgoing_date != None).\
+        order_by(Goods.outgoing_date.desc())
+
+    sales_sum = Goods.query.with_entities(func.sum(Goods.outgoing_price).label('sum')).\
+        filter(Goods.outgoing_price != None, Goods.outgoing_date != None)
+
+    if form.from_date.data:
+        req = req.filter(Goods.outgoing_date > form.from_date.data)
+        sales_sum = sales_sum.filter(Goods.outgoing_date > form.from_date.data)
+    if form.to_date.data:
+        req = req.filter(Goods.outgoing_date < form.to_date.data)
+        sales_sum = sales_sum.filter(Goods.outgoing_date < form.to_date.data)
+
+    pagination = req.paginate(page, 10)
+    return render_template('b_acc/sales.html',
+                           pagination=pagination,
+                           sum=sales_sum.first().sum,
+                           form=form)
 
 
 @business_accounting.route('sale/add', methods=('POST', 'GET'))
