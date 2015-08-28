@@ -45,7 +45,7 @@
         <h2> Продажи на сумму: {{ sum }}</h2>
     </div>
     {% endif %}
-    {{ macros.render_pagination(pagination, "b_acc.sales") }}
+    {{ macros.render_pagination(pagination, "b_acc.sales", {'from_date': form.from_date.data, 'to_date': form.to_date.data}) }}
     <div class="row">
         <table class="table">
             <thead>
@@ -68,6 +68,6 @@
             </tbody>
         </table>
     </div>
-    {{ macros.render_pagination(pagination, "b_acc.sales") }}
+    {{ macros.render_pagination(pagination, "b_acc.sales", {'from_date': form.from_date.data, 'to_date': form.to_date.data}) }}
 </div>
 {% endblock %}

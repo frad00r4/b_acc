@@ -17,10 +17,11 @@ class AddDocument(Form):
     submit = SubmitField(u'Отправить')
 
 
-@business_accounting.route('documents')
-def documents():
-    documents = Documents.query.all()
-    return render_template('b_acc/documents.html', documents=documents)
+@business_accounting.route('documents', defaults={'page': 1})
+@business_accounting.route('documents/<int:page>')
+def documents(page):
+    pagination = Documents.query.paginate(page, 10)
+    return render_template('b_acc/documents.html', pagination=pagination)
 
 
 @business_accounting.route('documents/add', methods=('POST', 'GET'))
