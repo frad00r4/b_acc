@@ -13,6 +13,7 @@ class Nomenclatures(connection.Model):
     name = connection.Column(connection.String(255))
     ext_name = connection.Column(connection.String(255), nullable=True)
     goods = connection.relationship('Goods', backref='nomenclature', lazy='dynamic')
+    price = connection.relationship('Price', backref='nomenclature', lazy='dynamic')
     mysql_character_set = 'utf8'
 
 
@@ -67,7 +68,7 @@ class Attributes(connection.Model):
 
 class Price(connection.Model):
     id = connection.Column(connection.Integer, primary_key=True)
-    goods_id = connection.Column(connection.Integer, connection.ForeignKey('goods.id'))
+    nomenclature_id = connection.Column(connection.Integer, connection.ForeignKey('nomenclatures.id'))
     attribute_id = connection.Column(connection.Integer, connection.ForeignKey('attributes.id'), nullable=True)
     price = connection.Column(connection.Integer, nullable=False)
     mysql_character_set = 'utf8'

@@ -167,9 +167,9 @@ def edit_incoming_item(incoming_id, item_id):
     form.attribute_id.choices = [(attr.id, attr.name) for attr in Attributes.query.all()]
 
     if request.method == 'POST' and form.validate():
-        item.nomenclature_id = form.nomenclature_id.data,
-        item.attribute_id = form.attribute_id.data,
-        item.incoming_price = form.incoming_price.data,
+        item.nomenclature_id = form.nomenclature_id.data
+        item.attribute_id = form.attribute_id.data
+        item.incoming_price = form.incoming_price.data
         try:
             connection.session.commit()
             flash(u'Поставка товара изменена', 'success')

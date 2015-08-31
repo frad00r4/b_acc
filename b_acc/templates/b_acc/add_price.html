@@ -1,0 +1,27 @@
+{% extends "layouts/main.html" %}
+
+{% set  title = "Установка цены продажи" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST">
+                {{ form.csrf_token }}
+                {{ form.nomenclature_id.label }}
+                <div class="form-group">
+                    {{ form.nomenclature_id(class="form-control select2", tabindex="1") }}
+                </div>
+                {{ form.attribute_id.label }}
+                <div class="form-group">
+                    {{ form.attribute_id(class="form-control select2", tabindex="2") }}
+                </div>
+                {{ form.price.label }}
+                <div class="form-group">
+                    {{ form.price(class="form-control select2", tabindex="3") }}
+                </div>
+                {{ form.submit(class="btn btn-default", tabindex="4") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

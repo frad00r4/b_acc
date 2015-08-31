@@ -12,7 +12,6 @@ from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, Acco
 from ...exts import connection
 from . import business_accounting
 from werkzeug.datastructures import MultiDict
-from datetime import  datetime
 
 
 class AddSale(Form):

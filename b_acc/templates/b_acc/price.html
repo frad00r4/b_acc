@@ -1,12 +1,41 @@
 {% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
 
 {% set  title = "Прайс" %}
 {% block body %}
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <h1>STUB</h1>
+            <a href="{{ url_for('b_acc.add_price') }}">
+                <button type="button" class="btn btn-info" tabindex="1">Добавить</button>
+            </a>
         </div>
     </div>
+    {{ macros.render_pagination(pagination, "b_acc.prices") }}
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>Название</th>
+                <th>Аттрибуты</th>
+                <th>Цена</th>
+                <th>Операции</th>
+            </thead>
+            <tbody>
+            {% for item in pagination.items %}
+                <tr>
+                    <td>{{ item.nomenclature.internal_code }} - {{ item.nomenclature.name }}</td>
+                    <td>{% if item.attribute %}{{ item.attribute.name }}{% endif %}</td>
+                    <td>{{ item.price }}</td>
+                    <td>
+                        <a href="{{ url_for('b_acc.price_edit', price_id=item.id) }}">
+                            <button type="button" class="btn btn-info">Изменить</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {{ macros.render_pagination(pagination, "b_acc.prices") }}
 </div>
 {% endblock %}

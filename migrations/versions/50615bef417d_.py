@@ -27,6 +27,6 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint('fk_incoming_account_actions', 'account_actions', type='foreignkey')
+    op.drop_constraint('fk_incoming_account_actions', 'account_actions')
 
     op.drop_column('account_actions', 'incoming_id')
