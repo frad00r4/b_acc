@@ -172,5 +172,6 @@ def view_account(account_id, page):
         flash(u'Счет: %s не существует' % account_id, 'danger')
         return redirect(url_for('b_acc.accounts'))
 
-    pagination = AccountActions.query.filter_by(account_id=account_id).paginate(page, 10)
+    pagination = AccountActions.query.filter_by(account_id=account_id).order_by(AccountActions.datetime.desc()).\
+        paginate(page, 10)
     return render_template('b_acc/view_account.html', account=account_model, pagination=pagination)
