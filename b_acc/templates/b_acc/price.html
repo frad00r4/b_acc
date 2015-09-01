@@ -30,6 +30,9 @@
                         <a href="{{ url_for('b_acc.price_edit', price_id=item.id) }}">
                             <button type="button" class="btn btn-info">Изменить</button>
                         </a>
+                        <a href="{{ url_for('b_acc.del_price', price_id=item.id) }}">
+                            <button type="button" class="btn btn-danger">Удалить</button>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}

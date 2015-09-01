@@ -26,7 +26,7 @@ def nomenclatures(page):
     return render_template('b_acc/nomenclatures.html', pagination=pagination)
 
 
-@business_accounting.route('nomenclatures/add', methods=('POST', 'GET'))
+@business_accounting.route('nomenclature/add', methods=('POST', 'GET'))
 def add_nomenclature():
     form = AddNomenclature()
 
@@ -38,6 +38,30 @@ def add_nomenclature():
         try:
             connection.session.commit()
             flash(u'Номенклатура добавлена', 'success')
+            return redirect(url_for('b_acc.nomenclatures'))
+        except Exception as e:
+            flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return render_template('b_acc/add_nomenclature.html', form=form)
+
+
+@business_accounting.route('nomenclature/<int:nomenclature_id>/edit', methods=('POST', 'GET'))
+def edit_nomenclature(nomenclature_id):
+    nomenclature = Nomenclatures.query.filter_by(id=nomenclature_id).first()
+
+    if not nomenclature:
+        flash(u'Номенклатуры %s не существует' % nomenclature_id, 'danger')
+        return redirect(url_for('b_acc.nomenclatures'))
+    form = AddNomenclature(obj=nomenclature)
+
+    if request.method == 'POST' and form.validate():
+        nomenclature.internal_code = int(form.internal_code.data)
+        nomenclature.name = form.name.data
+        nomenclature.ext_name = form.ext_name.data if form.ext_name.data else None
+
+        try:
+            connection.session.commit()
+            flash(u'Номенклатура изменена', 'success')
             return redirect(url_for('b_acc.nomenclatures'))
         except Exception as e:
             flash(u'Ошибка DB: %s' % e.message, 'danger')

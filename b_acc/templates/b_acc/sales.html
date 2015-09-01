@@ -6,7 +6,7 @@
 <div class="base-template">
     <div class="row">
         <div class="col-md-2">
-            <a href="/b_acc/sale/add">
+            <a href="{{ url_for('b_acc.sale_add') }}">
                 <button type="button" class="btn btn-info">Добавить продажу</button>
             </a>
         </div>
@@ -32,6 +32,18 @@
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.nomenclature_id.label }}
+                <div class='input-group date'>
+                    {{ form.nomenclature_id(class="form-control") }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.attribute_id.label }}
+                <div class='input-group date'>
+                    {{ form.attribute_id(class="form-control") }}
                 </div>
             </div>
             <div class="col-md-2" style="top: 25px">

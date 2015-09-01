@@ -27,6 +27,8 @@ class AddSale(Form):
 class SalesFilter(Form):
     from_date = DateField(u'От')
     to_date = DateField(u'До')
+    nomenclature_id = SelectField(u'Номенклатура', choices=[], coerce=int)
+    attribute_id = SelectField(u'Аттрибут', choices=[], coerce=int)
     submit = SubmitField(u'Фильтровать')
 
 
@@ -38,7 +40,15 @@ def sales(page):
         data.update(to_date=request.args.get('to_date', None))
     if request.args.get('from_date', None):
         data.update(from_date=request.args.get('from_date', None))
+    if request.args.get('nomenclature_id', None):
+        data.update(nomenclature_id=request.args.get('nomenclature_id', None))
+    if request.args.get('attribute_id', None):
+        data.update(attribute_id=request.args.get('attribute_id', None))
+
     form = SalesFilter(formdata=MultiDict(data))
+    form.nomenclature_id.choices = [(0, u'')] + [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
+                                    for nom in Nomenclatures.query.all()]
+    form.attribute_id.choices = [(0, u'')] + [(attr.id, attr.name) for attr in Attributes.query.all()]
 
     req = Goods.query.filter(Goods.outgoing_price != None, Goods.outgoing_date != None).\
         order_by(Goods.outgoing_date.desc())
@@ -52,6 +62,12 @@ def sales(page):
     if form.to_date.data:
         req = req.filter(Goods.outgoing_date < form.to_date.data)
         sales_sum = sales_sum.filter(Goods.outgoing_date < form.to_date.data)
+    if form.nomenclature_id.data:
+        req = req.filter(Goods.nomenclature_id == form.nomenclature_id.data)
+        sales_sum = sales_sum.filter(Goods.nomenclature_id == form.nomenclature_id.data)
+    if form.attribute_id.data:
+        req = req.filter(Goods.attribute_id == form.attribute_id.data)
+        sales_sum = sales_sum.filter(Goods.attribute_id == form.attribute_id.data)
 
     pagination = req.paginate(page, 10)
     return render_template('b_acc/sales.html',

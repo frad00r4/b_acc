@@ -252,19 +252,19 @@ def load_incoming(incoming_id):
             for row in csv_reader:
                 attrs = row[2].split(',')
                 if len(attrs) != int(row[1]):
-                    raise BadFile
+                    raise BadFile('Кол-во размеров не равноу указанному кол-ву товара (%s)' % row[0])
 
                 if row[0] not in nomenclatures:
                     nomenclature = Nomenclatures.query.filter_by(internal_code=int(row[0])).first()
                     if not nomenclature:
-                        raise BadFile
+                        raise BadFile('Нет такой номенклатуры %s' % row[0])
                     nomenclatures.update({row[0]: nomenclature.id})
 
                 for attr in attrs:
                     if row[0] not in attributes:
                         attribute = Attributes.query.filter_by(id=int(attr)).first()
                         if not attribute:
-                            raise BadFile
+                            raise BadFile('Нет такого аттрибута %s' % row[0])
                         attributes.update({attr: attribute.id})
 
                     item = Goods(nomenclature_id=nomenclatures[row[0]],
@@ -284,7 +284,7 @@ def load_incoming(incoming_id):
             except Exception as e:
                 flash(u'Ошибка DB: %s' % e.message, 'danger')
 
-        except BadFile:
-            flash(u'Ошибка в CSV', 'danger')
+        except BadFile as e:
+            flash(u'Ошибка в CSV: %s' % e.message, 'danger')
 
     return render_template('b_acc/load_incoming.html', form=form)

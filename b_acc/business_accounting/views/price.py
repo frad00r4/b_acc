@@ -32,8 +32,7 @@ def add_price():
     form = PriceForm()
     form.nomenclature_id.choices = [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
                                     for nom in Nomenclatures.query.all()]
-    form.attribute_id.choices = [(attr.id, attr.name) for attr in Attributes.query.all()]
-    form.attribute_id.choices.append((0, u''))
+    form.attribute_id.choices = [(0, u'')] + [(attr.id, attr.name) for attr in Attributes.query.all()]
 
     if request.method == 'POST' and form.validate():
         price = Price(nomenclature_id=form.nomenclature_id.data,
@@ -56,7 +55,7 @@ def price_edit(price_id):
     price = Price.query.filter_by(id=price_id).first()
 
     if not price:
-        flash(u'Wtys: %s не существует' % price_id, 'danger')
+        flash(u'Цены: %s не существует' % price_id, 'danger')
         return redirect(url_for('b_acc.prices'))
 
     form = PriceForm(obj=price)
@@ -103,3 +102,20 @@ def get_price():
                            'price': price_all.price})
     else:
         return json.dumps({'result': False})
+
+
+@business_accounting.route('price/<int:price_id>/del')
+def del_price(price_id):
+    price = Price.query.filter_by(id=price_id).first()
+
+    if not price:
+        flash(u'Цены: %s не существует' % price_id, 'danger')
+    else:
+        connection.session.delete(price)
+        try:
+            connection.session.commit()
+            flash(u'Цена удалена', 'success')
+        except Exception as e:
+            flash(u'Ошибка DB: %s' % e.message, 'danger')
+
+    return redirect(url_for('b_acc.prices'))
