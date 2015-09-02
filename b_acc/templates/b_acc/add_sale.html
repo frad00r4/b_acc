@@ -41,4 +41,10 @@
         </div>
     </div>
 </div>
+<script>
+    $( document ).ready(function () {
+        $('#nomenclature_id').select2().on('change', function() {get_price('http://127.0.0.1:5000/b_acc/price/get') })
+        $('#attribute_id').select2().on('change', function() {get_price('http://127.0.0.1:5000/b_acc/price/get') })
+    })
+</script>
 {% endblock %}

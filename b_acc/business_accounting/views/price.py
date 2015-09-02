@@ -82,22 +82,22 @@ def price_edit(price_id):
 
 @business_accounting.route('price/get')
 def get_price():
-    nomencalture = request.args.get('nomencalture', None)
+    nomenclature = request.args.get('nomenclature', None)
     attribute = request.args.get('attribute', None)
 
-    price_all = Price.query.filter_by(nomenclature_id=nomencalture,
+    price_all = Price.query.filter_by(nomenclature_id=nomenclature,
                                       attribute_id=None).first()
-    price = Price.query.filter_by(nomenclature_id=nomencalture,
+    price = Price.query.filter_by(nomenclature_id=nomenclature,
                                   attribute_id=attribute).first() if attribute else None
 
     if price:
         return json.dumps({'result': True,
-                           'nomencalture': price.nomenclature_id,
+                           'nomenclature': price.nomenclature_id,
                            'attribute': price.attribute,
                            'price': price.price})
     elif price_all:
         return json.dumps({'result': True,
-                           'nomencalture': price_all.nomenclature_id,
+                           'nomenclature': price_all.nomenclature_id,
                            'attribute': price_all.attribute,
                            'price': price_all.price})
     else:
