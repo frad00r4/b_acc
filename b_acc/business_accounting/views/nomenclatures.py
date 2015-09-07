@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
-
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
 from wtforms import StringField, IntegerField, SubmitField
@@ -10,6 +7,10 @@ from wtforms.validators import DataRequired
 from ..models import Nomenclatures
 from ...exts import connection
 from . import business_accounting
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 class AddNomenclature(Form):
@@ -22,7 +23,7 @@ class AddNomenclature(Form):
 @business_accounting.route('nomenclatures', defaults={'page': 1})
 @business_accounting.route('nomenclatures/<int:page>')
 def nomenclatures(page):
-    pagination = Nomenclatures.query.paginate(page, 10)
+    pagination = Nomenclatures.query.order_by(Nomenclatures.internal_code.asc()).paginate(page, 10)
     return render_template('b_acc/nomenclatures.html', pagination=pagination)
 
 

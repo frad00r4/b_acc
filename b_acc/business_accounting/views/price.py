@@ -23,7 +23,7 @@ class PriceForm(Form):
 @business_accounting.route('prices', defaults={'page': 1})
 @business_accounting.route('prices/<int:page>')
 def prices(page):
-    pagination = Price.query.paginate(page, 10)
+    pagination = Price.query.order_by(Price.nomenclature_id.asc()).paginate(page, 10)
     return render_template('b_acc/price.html', pagination=pagination)
 
 
