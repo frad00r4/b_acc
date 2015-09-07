@@ -15,7 +15,7 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.drop_constraint('fk_goods_price', 'price')
+    op.drop_constraint('fk_goods_price', 'price', type_='foreignkey')
     op.drop_column('price', 'goods_id')
     op.add_column('price', sa.Column('nomenclature_id', sa.Integer, nullable=False))
 
@@ -29,7 +29,7 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint('fk_nomenclatures_price', 'price')
+    op.drop_constraint('fk_nomenclatures_price', 'price', type_='foreignkey')
     op.drop_column('price', 'nomenclature_id')
     op.add_column('price', sa.Column('goods_id', sa.Integer, nullable=False))
 

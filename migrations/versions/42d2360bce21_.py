@@ -187,16 +187,16 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint('fk_documents_incoming', 'incoming')
-    op.drop_constraint('fk_accounts_incoming', 'incoming')
-    op.drop_constraint('fk_attributes_goods', 'goods')
-    op.drop_constraint('fk_nomenclatures_goods', 'goods')
-    op.drop_constraint('fk_incoming_goods', 'goods')
-    op.drop_constraint('fk_goods_price', 'price')
-    op.drop_constraint('fk_attributes_price', 'price')
-    op.drop_constraint('fk_accounts_account_actions', 'account_actions')
-    op.drop_constraint('fk_goods_account_actions', 'account_actions')
-    op.drop_constraint('fk_documents_account_actions', 'account_actions')
+    op.drop_constraint('fk_documents_incoming', 'incoming', type_='foreignkey')
+    op.drop_constraint('fk_accounts_incoming', 'incoming', type_='foreignkey')
+    op.drop_constraint('fk_attributes_goods', 'goods', type_='foreignkey')
+    op.drop_constraint('fk_nomenclatures_goods', 'goods', type_='foreignkey')
+    op.drop_constraint('fk_incoming_goods', 'goods', type_='foreignkey')
+    op.drop_constraint('fk_goods_price', 'price', type_='foreignkey')
+    op.drop_constraint('fk_attributes_price', 'price', type_='foreignkey')
+    op.drop_constraint('fk_accounts_account_actions', 'account_actions', type_='foreignkey')
+    op.drop_constraint('fk_goods_account_actions', 'account_actions', type_='foreignkey')
+    op.drop_constraint('fk_documents_account_actions', 'account_actions', type_='foreignkey')
 
     op.drop_table('goods')
     op.drop_table('incoming')
