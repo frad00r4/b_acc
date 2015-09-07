@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
 
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
@@ -12,7 +10,10 @@ from sqlalchemy.sql.functions import func
 from ...exts import connection
 from ..models import Incoming, Documents, Goods, Nomenclatures, Attributes, Accounts, AccountActions
 from . import business_accounting
-import csv
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 class BadFile(Exception):
@@ -246,36 +247,39 @@ def load_incoming(incoming_id):
 
     if request.method == 'POST' and form.validate():
         try:
-            csv_reader = csv.reader(form.csv_file.data.stream, delimiter=';')
             nomenclatures = dict()
             attributes = dict()
-            for row in csv_reader:
-                attrs = row[2].split(',')
-                if len(attrs) != int(row[1]):
-                    raise BadFile('Кол-во размеров не равноу указанному кол-ву товара (%s)' % row[0])
+            for row_raw in form.csv_file.data:
+                if unicode(row_raw).strip():
+                    row = unicode(row_raw).strip().split(';')
+                    if len(row) != 4:
+                        raise BadFile(u'Bad row %s' % unicode(row_raw))
+                    attrs = row[2].split(',')
+                    if len(attrs) != int(row[1]):
+                        raise BadFile(u'Кол-во размеров не равноу указанному кол-ву товара (%s)' % unicode(row_raw))
 
-                if row[0] not in nomenclatures:
-                    nomenclature = Nomenclatures.query.filter_by(internal_code=int(row[0])).first()
-                    if not nomenclature:
-                        raise BadFile('Нет такой номенклатуры %s' % row[0])
-                    nomenclatures.update({row[0]: nomenclature.id})
+                    if row[0] not in nomenclatures:
+                        nomenclature = Nomenclatures.query.filter_by(internal_code=int(row[0])).first()
+                        if not nomenclature:
+                            raise BadFile(u'Нет такой номенклатуры %s' % unicode(row_raw))
+                        nomenclatures.update({row[0]: nomenclature.id})
 
-                for attr in attrs:
-                    if row[0] not in attributes:
-                        attribute = Attributes.query.filter_by(id=int(attr)).first()
-                        if not attribute:
-                            raise BadFile('Нет такого аттрибута %s' % row[0])
-                        attributes.update({attr: attribute.id})
+                    for attr in attrs:
+                        if row[0] not in attributes:
+                            attribute = Attributes.query.filter_by(id=int(attr)).first()
+                            if not attribute:
+                                raise BadFile(u'Нет такого аттрибута %s' % unicode(row_raw))
+                            attributes.update({attr: attribute.id})
 
-                    item = Goods(nomenclature_id=nomenclatures[row[0]],
-                                 attribute_id=attributes[attr],
-                                 incoming_id=incoming_model.id,
-                                 incoming_date=incoming_model.incoming_date,
-                                 outgoing_date=None,
-                                 incoming_price=int(row[3]),
-                                 outgoing_price=None,
-                                 paid=False)
-                    connection.session.add(item)
+                        item = Goods(nomenclature_id=nomenclatures[row[0]],
+                                     attribute_id=attributes[attr],
+                                     incoming_id=incoming_model.id,
+                                     incoming_date=incoming_model.incoming_date,
+                                     outgoing_date=None,
+                                     incoming_price=int(row[3]),
+                                     outgoing_price=None,
+                                     paid=False)
+                        connection.session.add(item)
 
             try:
                 connection.session.commit()
