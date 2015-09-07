@@ -25,7 +25,8 @@ def storage(page):
         JOIN nomenclatures ON nomenclatures.id = goods.nomenclature_id
         JOIN attributes ON attributes.id = goods.attribute_id
     WHERE
-        goods.outgoing_date IS NULL
+        goods.outgoing_date IS NULL AND
+        goods.paid = 1
     GROUP BY
         goods.nomenclature_id,
         goods.attribute_id,
@@ -39,7 +40,7 @@ def storage(page):
                       Nomenclatures.name.label('nom_name')).\
         join(Nomenclatures).\
         join(Attributes).\
-        filter(func.isnull(Goods.outgoing_date)).\
+        filter(func.isnull(Goods.outgoing_date), Goods.paid == True).\
         group_by(Goods.nomenclature_id).paginate(page, 10)
 
     return render_template('b_acc/storage.html', pagination=pagination)

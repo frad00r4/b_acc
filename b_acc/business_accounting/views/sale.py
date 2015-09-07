@@ -91,7 +91,8 @@ def sale_add():
             filter_by(nomenclature_id=form.nomenclature_id.data,
                       attribute_id=form.attribute_id.data,
                       outgoing_price=None,
-                      outgoing_date=None).order_by(Goods.incoming_id.desc()).first()
+                      outgoing_date=None,
+                      paid=True).order_by(Goods.incoming_id.desc()).first()
 
         if not account:
             flash(u'Продажа: нет такого счета или он закрыт: %d' % form.account_id.data, 'danger')
