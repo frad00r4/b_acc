@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
 
 from flask import render_template, request, flash, redirect, url_for
 from flask_wtf import Form
@@ -11,6 +9,10 @@ from ...exts import connection
 from ..models import Price, Nomenclatures, Attributes
 from . import business_accounting
 import json
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 class PriceForm(Form):
@@ -23,7 +25,7 @@ class PriceForm(Form):
 @business_accounting.route('prices', defaults={'page': 1})
 @business_accounting.route('prices/<int:page>')
 def prices(page):
-    pagination = Price.query.order_by(Price.nomenclature_id.asc()).paginate(page, 10)
+    pagination = Price.query.join(Nomenclatures).order_by(Nomenclatures.internal_code.asc()).paginate(page, 10)
     return render_template('b_acc/price.html', pagination=pagination)
 
 

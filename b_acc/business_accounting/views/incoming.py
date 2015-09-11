@@ -265,7 +265,7 @@ def load_incoming(incoming_id):
                         nomenclatures.update({row[0]: nomenclature.id})
 
                     for attr in attrs:
-                        if row[0] not in attributes:
+                        if attr not in attributes:
                             attribute = Attributes.query.filter_by(id=int(attr)).first()
                             if not attribute:
                                 raise BadFile(u'Нет такого аттрибута %s' % unicode(row_raw))

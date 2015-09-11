@@ -1,0 +1,30 @@
+{% extends "layouts/main.html" %}
+{% import 'macros/pagination.html' as macros %}
+
+{% set  title = "Наличие товара на сумму" %}
+{% block body %}
+<div class="base-template">
+    <div class="row">
+        <fieldset>
+        <form method="GET">
+            <div class="col-md-2">
+                {{ form.on_date.label }}
+                <div class='input-group date datetimepicker1'>
+                    {{ form.on_date(class="form-control") }}
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2" style="top: 25px">
+                {{ form.submit(class="btn btn-default") }}
+            </div>
+        </form>
+        </fieldset>
+    </div>
+    <br/>
+    <div class="row">
+        <h2> Товар на сумму: {{ sum }}</h2>
+    </div>
+</div>
+{% endblock %}

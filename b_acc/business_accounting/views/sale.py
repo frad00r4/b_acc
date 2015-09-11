@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
-
 from flask import render_template, request, flash, redirect, url_for
 from sqlalchemy.sql.functions import func
 from flask_wtf import Form
@@ -12,6 +9,10 @@ from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, Acco
 from ...exts import connection
 from . import business_accounting
 from werkzeug.datastructures import MultiDict
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 class AddSale(Form):

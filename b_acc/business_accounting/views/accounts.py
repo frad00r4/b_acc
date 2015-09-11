@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
-
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
 from wtforms import SubmitField, StringField
@@ -12,6 +9,10 @@ from sqlalchemy.orm import aliased
 from ..models import Accounts, AccountActions
 from ...exts import connection
 from . import business_accounting
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 class AddAccount(Form):
