@@ -26,7 +26,7 @@
                     <td>{{ item.datetime }}</td>
                     <td>{{ actions[item.action_type] }}</td>
                     <td>{{ item.document.name }}</td>
-                    <td>{% if item.goods %}Продажа {{ item.goods.nomenclature.internal_code }} - {{ item.goods.nomenclature.name }}
+                    <td>{% if item.goods %}Товар {{ item.goods.nomenclature.internal_code }} - {{ item.goods.nomenclature.name }}
                         {% elif item.incoming %}Поступление от {{ item.incoming.incoming_date }}{%else%}-{% endif %}</td>
                     <td>{{ item.amount }}</td>
                 </tr>
