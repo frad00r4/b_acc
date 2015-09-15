@@ -41,7 +41,7 @@ def storage(page):
         join(Nomenclatures).\
         join(Attributes).\
         filter(func.isnull(Goods.outgoing_date), Goods.paid == True).\
-        group_by(Goods.nomenclature_id).paginate(page, 10)
+        group_by(Goods.nomenclature_id).order_by(Nomenclatures.internal_code.asc()).paginate(page, 10)
 
     return render_template('b_acc/storage.html', pagination=pagination)
 
