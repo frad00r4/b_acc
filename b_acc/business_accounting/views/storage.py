@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'frad00r4'
-__email__ = 'frad00r4@gmail.com'
-
 from flask import render_template, flash, redirect, url_for
 from sqlalchemy.sql.functions import func
 from ..models import Goods, Nomenclatures, Attributes
 from . import business_accounting
+
+
+__author__ = 'frad00r4'
+__email__ = 'frad00r4@gmail.com'
 
 
 @business_accounting.route('storage', defaults={'page': 1})
