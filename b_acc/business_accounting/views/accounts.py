@@ -2,14 +2,14 @@
 
 from flask import request, render_template, flash, redirect, url_for
 from flask_wtf import Form
-from wtforms import SubmitField, StringField
+from wtforms import SubmitField, StringField, DateField, SelectField
 from wtforms.validators import DataRequired
 from sqlalchemy.sql.functions import func
 from sqlalchemy.orm import aliased
-from ..models import Accounts, AccountActions
 from ...exts import connection
+from ..utils import request_filter
+from ..models import Accounts, AccountActions, Nomenclatures, Incoming, Goods
 from . import business_accounting
-
 
 __author__ = 'frad00r4'
 __email__ = 'frad00r4@gmail.com'
@@ -18,6 +18,17 @@ __email__ = 'frad00r4@gmail.com'
 class AddAccount(Form):
     name = StringField(u'Название', validators=[DataRequired()])
     submit = SubmitField(u'Отправить')
+
+
+class ActionsFilter(Form):
+    from_date = DateField(u'От')
+    to_date = DateField(u'До')
+    action = SelectField(u'Операция', choices=[(0, u''),
+                                               (1, u'Поступления'),
+                                               (2, u'Расходы')], coerce=int)
+    nomenclature_id = SelectField(u'Номенклатура', choices=[], coerce=int)
+    incoming_id = SelectField(u'Поступление', choices=[], coerce=int)
+    submit = SubmitField(u'Фильтровать')
 
 
 @business_accounting.route('accounts', defaults={'page': 1})
@@ -51,26 +62,26 @@ def accounts(page):
     GROUP BY accounts.id
     """
 
-    subreq_out = AccountActions.query.\
+    subreq_out = AccountActions.query. \
         with_entities(AccountActions.account_id.label('account_id'),
-                      (AccountActions.amount.label('amount') * -1)).\
+                      (AccountActions.amount.label('amount') * -1)). \
         filter_by(action_type='outgoing')
 
-    total = AccountActions.query.\
+    total = AccountActions.query. \
         with_entities(AccountActions.account_id.label('account_id'),
-                      AccountActions.amount.label('amount')).\
-        filter_by(action_type='incoming').\
-        union_all(subreq_out).\
+                      AccountActions.amount.label('amount')). \
+        filter_by(action_type='incoming'). \
+        union_all(subreq_out). \
         subquery(name='total')
 
     subreq = aliased(total)
 
-    accounts_req = Accounts.query.\
+    accounts_req = Accounts.query. \
         with_entities(Accounts.id,
                       Accounts.name,
                       Accounts.actived,
-                      func.sum(subreq.c.amount).label('amount')).\
-        outerjoin(subreq).\
+                      func.sum(subreq.c.amount).label('amount')). \
+        outerjoin(subreq). \
         group_by(Accounts.id)
 
     pagination = accounts_req.paginate(page, 10)
@@ -147,32 +158,55 @@ def view_account(account_id, page):
     GROUP BY accounts.id
     """
 
-    subreq_out = AccountActions.query.\
+    data = request_filter(request.args,
+                          filtered=['to_date', 'from_date', 'nomenclature_id', 'action', 'incoming_id'],
+                          default=None)
+
+    form = ActionsFilter(formdata=data)
+    form.nomenclature_id.choices = [(0, u'')] + [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
+                                                 for nom in Nomenclatures.query.all()]
+    form.incoming_id.choices = [(0, u'')] + [(incoming.id, incoming.incoming_date)
+                                                 for incoming in Incoming.query.all()]
+
+    req = AccountActions.query.filter_by(account_id=account_id)
+
+    if form.from_date.data:
+        req = req.filter(AccountActions.datetime > form.from_date.data)
+    if form.to_date.data:
+        req = req.filter(AccountActions.datetime < form.to_date.data)
+    if form.nomenclature_id.data:
+        req = req.filter(AccountActions.goods_id.in_([item.id for item in Goods.query.filter_by(nomenclature_id=form.nomenclature_id.data).all()]))
+    if form.action.data:
+        req = req.filter(AccountActions.action_type == ('incoming' if form.action.data == 1 else 'outgoing'))
+    if form.incoming_id.data:
+        req = req.filter(AccountActions.incoming_id == form.incoming_id.data)
+
+    subreq_out = req. \
         with_entities(AccountActions.account_id.label('account_id'),
-                      (AccountActions.amount.label('amount') * -1)).\
+                      (AccountActions.amount.label('amount') * -1)). \
         filter_by(action_type='outgoing')
 
-    total = AccountActions.query.\
+    total = req. \
         with_entities(AccountActions.account_id.label('account_id'),
-                      AccountActions.amount.label('amount')).\
-        filter_by(action_type='incoming').\
-        union_all(subreq_out).\
+                      AccountActions.amount.label('amount')). \
+        filter_by(action_type='incoming'). \
+        union_all(subreq_out). \
         subquery(name='total')
 
     subreq = aliased(total)
 
-    account_model = Accounts.query.\
-        filter_by(id=account_id).\
+    account_model = Accounts.query. \
+        filter_by(id=account_id). \
         with_entities(Accounts.id.label('account_id'),
                       Accounts.name,
                       Accounts.actived,
-                      func.sum(subreq.c.amount).label('amount')).\
-        outerjoin(subreq).\
+                      func.sum(subreq.c.amount).label('amount')). \
+        outerjoin(subreq). \
         group_by(Accounts.id).first()
     if not account_model:
         flash(u'Счет: %s не существует' % account_id, 'danger')
         return redirect(url_for('b_acc.accounts'))
 
-    pagination = AccountActions.query.filter_by(account_id=account_id).order_by(AccountActions.datetime.desc()).\
-        paginate(page, 10)
-    return render_template('b_acc/view_account.html', account=account_model, pagination=pagination)
+    pagination = req.order_by(AccountActions.datetime.desc()).paginate(page, 10)
+
+    return render_template('b_acc/view_account.html', account=account_model, pagination=pagination, form=form)

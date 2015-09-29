@@ -5,10 +5,10 @@ from sqlalchemy.sql.functions import func
 from flask_wtf import Form
 from wtforms import SubmitField, DateTimeField, SelectField, IntegerField, DateField
 from wtforms.validators import DataRequired
-from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, AccountActions
 from ...exts import connection
+from ..models import Goods, Nomenclatures, Attributes, Documents, Accounts, AccountActions
+from ..utils import request_filter
 from . import business_accounting
-from werkzeug.datastructures import MultiDict
 
 
 __author__ = 'frad00r4'
@@ -36,17 +36,11 @@ class SalesFilter(Form):
 @business_accounting.route('sales', defaults={'page': 1})
 @business_accounting.route('sales/<int:page>')
 def sales(page):
-    data = dict()
-    if request.args.get('to_date', None):
-        data.update(to_date=request.args.get('to_date', None))
-    if request.args.get('from_date', None):
-        data.update(from_date=request.args.get('from_date', None))
-    if request.args.get('nomenclature_id', None):
-        data.update(nomenclature_id=request.args.get('nomenclature_id', None))
-    if request.args.get('attribute_id', None):
-        data.update(attribute_id=request.args.get('attribute_id', None))
+    data = request_filter(request.args,
+                          filtered=['to_date', 'from_date', 'nomenclature_id', 'attribute_id'],
+                          default=None)
 
-    form = SalesFilter(formdata=MultiDict(data))
+    form = SalesFilter(formdata=data)
     form.nomenclature_id.choices = [(0, u'')] + [(nom.id, "%d - %s" % (nom.internal_code, nom.name))
                                     for nom in Nomenclatures.query.all()]
     form.attribute_id.choices = [(0, u'')] + [(attr.id, attr.name) for attr in Attributes.query.all()]

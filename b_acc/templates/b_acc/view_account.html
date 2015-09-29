@@ -8,7 +8,53 @@
     <div class="row">
         {% if account.actived == 0 %}<h1 class="text-danger">СЧЕТ ЗАКРЫТ</h1>{% endif %}
         <h3>Движения денежных средств по счету <span class="text-success">{{ account.name }}</span></h3>
-        <h3>состояние счету: <span class="{% if account.amount > 0 %}text-success{% else %}text-danger{% endif %}">{{account.amount}}</span></h3>
+        <h3>состояние счету: <span class="{% if account.amount > 0 %}text-success{% else %}text-danger{% endif %}">{% if account.amount is none %}0{% else %}{{account.amount}}{% endif %}</span></h3>
+    </div>
+    <div class="row">
+        <fieldset>
+        <legend>Фильтр</legend>
+        <form method="GET">
+            <div class="col-md-2">
+                {{ form.from_date.label }}
+                <div class='input-group date datetimepicker1'>
+                    {{ form.from_date(class="form-control") }}
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.to_date.label }}
+                <div class='input-group date datetimepicker1'>
+                    {{ form.to_date(class="form-control") }}
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.action.label }}
+                <div class='input-group date'>
+                    {{ form.action(class="form-control select2", style="width: 160px;") }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.nomenclature_id.label }}
+                <div class='input-group date'>
+                    {{ form.nomenclature_id(class="form-control select2", style="width: 160px;") }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                {{ form.incoming_id.label }}
+                <div class='input-group date'>
+                    {{ form.incoming_id(class="form-control select2", style="width: 160px;") }}
+                </div>
+            </div>
+            <div class="col-md-2" style="top: 25px">
+                {{ form.submit(class="btn btn-default") }}
+            </div>
+        </form>
+        </fieldset>
     </div>
     {{ macros.render_pagination(pagination, "b_acc.view_account", {'account_id': account.account_id}) }}
     <div class="row">
